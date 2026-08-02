@@ -1,0 +1,40 @@
+<article class="ride-card">
+  <div class="ride-main">
+    <div class="ride-top"><h3><%= ride.user.name %></h3><span><%= ride.driver? ? "#{pluralize(ride.available_seats, "seat")} available" : "needs #{pluralize(ride.seats, "seat")}" %></span></div>
+    <p class="route"><span><%= ride.direction == "return" ? "Destination:" : "Starting location:" %></span> <%= ride.origin %></p>
+    <% if ride.departure_time %><p class="meta">Departure time: <%= ride.departure_time.strftime("%-I:%M %p") %></p><% end %>
+    <% if ride.notes.present? %><p class="notes"><%= ride.notes %></p><% end %>
+    <% if signed_in? %><p class="contact">Contact: <%= mail_to ride.user.email %></p><% end %>
+    <% if ride.driver? %>
+      <% if ride.ride_claims.any? %>
+        <div class="passengers">
+          <strong>Passengers</strong>
+          <ul>
+            <% ride.ride_claims.each do |claim| %>
+              <li>
+                <span><%= claim.user.name %> — <%= pluralize(claim.seats, "seat") %> — <%= claim.pickup_location %><% if signed_in? %> — <%= mail_to claim.user.email %><% end %></span>
+                <% if current_user == claim.user %>
+                  <%= button_to "Leave ride", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Leave this ride?" } } %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% unless @carpool.rides.exists?(user: current_user, role: "driver", direction: ride.direction) || current_claim&.ride_id == ride.id || !signed_in? %>
+        <% if !ride.available_seats.positive? %>
+          <p class="full-label">This ride is full.</p>
+        <% elsif @join_ride == ride %>
+          <%= render "ride_claims/form", carpool: @carpool, ride: ride, ride_claim: @ride_claim, switching: current_claim.present? %>
+        <% else %>
+          <%= link_to(current_claim ? "Switch to this ride" : "Join this ride", carpool_path(@carpool, join_ride: ride.id, anchor: "claim-form"), class: "join-link") %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% if current_user == ride.user %>
+      <% removal_warning = ride.driver? && ride.ride_claims.any? ? "Remove this ride? #{pluralize(ride.ride_claims.size, "passenger")} will be moved to ride requests." : "Remove your entry?" %>
+      <div class="owner-actions"><%= link_to "Edit", edit_carpool_ride_path(@carpool, ride) %><%= button_to "Remove", carpool_ride_path(@carpool, ride), method: :delete, form: { data: { turbo_confirm: removal_warning } } %></div>
+    <% end %>
+  </div>
+</article>

@@ -1,0 +1,9 @@
+<%= form_with model: carpool, class: "paper-form" do |form| %>
+  <% if carpool.errors.any? %><div class="error-box"><strong>Please check the details:</strong><%= carpool.errors.full_messages.to_sentence %></div><% end %>
+  <div class="field wide"><%= form.label :name, "Trip name" %><%= form.text_field :name, placeholder: "Beach trip", autofocus: true, required: true %></div>
+  <div class="field wide"><%= form.label :destination %><%= form.text_field :destination, placeholder: "Ocean Beach, San Francisco", required: true %></div>
+  <div class="field wide"><%= form.label :starts_at, "Event start time" %><%= form.datetime_local_field :starts_at, required: true %></div>
+  <div class="field wide"><%= form.label :return_starts_at, "Return trip starts around (optional)" %><%= form.datetime_local_field :return_starts_at %></div>
+  <div class="field wide"><%= form.label :details, "Notes" %><%= form.text_area :details, rows: 3 %></div>
+  <div class="form-submit"><%= form.submit "Create carpool", class: "button button-primary" %></div>
+<% end %>

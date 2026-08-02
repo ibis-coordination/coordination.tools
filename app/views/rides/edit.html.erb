@@ -1,0 +1,6 @@
+<% content_for :title, "Edit your carpool post" %>
+<section class="page-shell form-page narrow">
+  <%= link_to "Back", carpool_path(@carpool), class: "back-link" %>
+  <div class="form-intro"><h1>Edit entry</h1></div>
+  <div class="join-panel"><%= render "form", carpool: @carpool, ride: @ride %></div>
+</section>

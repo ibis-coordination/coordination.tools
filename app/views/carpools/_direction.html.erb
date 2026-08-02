@@ -1,0 +1,23 @@
+<section class="direction-section" id="<%= direction %>">
+  <h2 class="direction-title"><%= label %></h2>
+  <div class="board-actions">
+    <%= link_to "I can drive", carpool_path(@carpool, role: "driver", direction: direction, anchor: "join"), class: "button button-primary" %>
+    <%= link_to "I need a ride", carpool_path(@carpool, role: "rider", direction: direction, anchor: "join"), class: "button button-outline" %>
+    <span>Updates appear automatically.</span>
+  </div>
+
+  <div class="ride-columns">
+    <div class="ride-column">
+      <div class="column-title"><h3>Available rides</h3><b><%= pluralize(drivers.sum(&:available_seats), "seat") %></b></div>
+      <% if drivers.any? %>
+        <% drivers.each do |ride| %><%= render "rides/ride", ride: ride, current_claim: @current_claims[direction] %><% end %>
+      <% else %><div class="empty-card"><p>No rides are available.</p></div><% end %>
+    </div>
+    <div class="ride-column">
+      <div class="column-title"><h3>Ride requests</h3><b><%= pluralize(riders.sum(&:seats), "seat") %></b></div>
+      <% if riders.any? %>
+        <% riders.each do |ride| %><%= render "rides/ride", ride: ride, current_claim: @current_claims[direction] %><% end %>
+      <% else %><div class="empty-card"><p>No unassigned ride requests.</p></div><% end %>
+    </div>
+  </div>
+</section>

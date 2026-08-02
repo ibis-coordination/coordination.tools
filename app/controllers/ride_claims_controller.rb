@@ -1,0 +1,59 @@
+class RideClaimsController < ApplicationController
+  before_action :require_user
+  before_action :set_carpool_and_ride
+  before_action :reject_drivers, only: :create
+
+  def create
+    @ride_claim = @ride.ride_claims.new(ride_claim_params.merge(user: current_user, carpool: @carpool))
+
+    @carpool.with_lock do
+      @ride.ride_claims.reload
+      if @ride.available_seats < @ride_claim.seats
+        redirect_to carpool_path(@carpool), alert: "This ride does not have enough seats."
+        return
+      end
+
+      @carpool.ride_claims.where(user: current_user, direction: @ride.direction).destroy_all
+      @carpool.rides.where(user: current_user, role: "rider", direction: @ride.direction).destroy_all
+      @ride_claim.save!
+    end
+
+    redirect_to carpool_path(@carpool), notice: "You joined #{@ride.user.name}'s ride."
+  rescue ActiveRecord::RecordInvalid
+    redirect_to carpool_path(@carpool, join_ride: @ride.id, anchor: "claim-form"), alert: @ride_claim.errors.full_messages.to_sentence
+  end
+
+  def destroy
+    claim = @ride.ride_claims.find_by!(id: params[:id], user: current_user)
+    @carpool.with_lock do
+      pickup_location = claim.pickup_location
+      seats = claim.seats
+      direction = claim.direction
+      claim.destroy!
+      unless @carpool.rides.exists?(user: current_user, direction: direction)
+        @carpool.rides.create!(
+          user: current_user,
+          role: "rider",
+          direction: direction,
+          origin: pickup_location,
+          seats: seats,
+          notes: "Previously assigned to a ride."
+        )
+      end
+    end
+    redirect_to carpool_path(@carpool), notice: "You left #{@ride.user.name}'s ride."
+  end
+
+  private
+
+  def set_carpool_and_ride
+    @carpool = Carpool.find_by!(public_id: params[:carpool_public_id])
+    @ride = @carpool.rides.where(role: "driver").find(params[:ride_id])
+  end
+
+  def ride_claim_params = params.require(:ride_claim).permit(:pickup_location, :seats)
+
+  def reject_drivers
+    redirect_to carpool_path(@carpool), alert: "Remove your driver entry before joining another ride." if @carpool.rides.exists?(user: current_user, role: "driver", direction: @ride.direction)
+  end
+end

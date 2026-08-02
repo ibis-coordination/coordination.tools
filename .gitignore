@@ -1,0 +1,33 @@
+# Environment and credentials
+/.env
+/.env.*
+!/.env.example
+/config/master.key
+/config/credentials/*.key
+
+# Rails runtime files
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+!/tmp/pids/
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+
+# Generated assets and test output
+/public/assets
+/public/packs
+/coverage
+
+# Local dependencies
+/.bundle
+/vendor/bundle
+
+# Editor and operating-system files
+.DS_Store
+*.swp
+*.swo
+/.idea
+/.vscode

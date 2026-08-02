@@ -1,0 +1,18 @@
+<%= form_with model: [carpool, ride], class: "ride-form" do |form| %>
+  <%= form.hidden_field :direction %>
+  <% if ride.errors.any? %><div class="error-box"><%= ride.errors.full_messages.to_sentence %></div><% end %>
+  <div class="role-toggle">
+    <label><%= form.radio_button :role, "driver" %><span>I can drive</span></label>
+    <label><%= form.radio_button :role, "rider" %><span>I need a ride</span></label>
+  </div>
+  <div class="form-grid">
+    <div class="field">
+      <%= form.label :origin, ride.direction == "return" ? "Destination" : "Starting location" %>
+      <%= form.text_field :origin, placeholder: ride.direction == "return" ? "Home address or area" : "The Mission", required: true %>
+    </div>
+    <div class="field"><%= form.label :departure_time, "Departure time" %><%= form.datetime_local_field :departure_time %></div>
+    <div class="field"><%= form.label :seats, "Number of seats" %><%= form.number_field :seats, min: 1, max: 12, required: true %></div>
+    <div class="field wide"><%= form.label :notes, "Notes" %><%= form.text_area :notes, rows: 2, placeholder: "I can pick up along the way…" %></div>
+  </div>
+  <%= form.submit ride.persisted? ? "Save changes" : "Add entry", class: "button button-primary" %>
+<% end %>

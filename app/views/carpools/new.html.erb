@@ -1,0 +1,9 @@
+<% content_for :title, "Start a carpool — coordination.tools" %>
+<section class="page-shell form-page">
+  <%= link_to "Back", root_path, class: "back-link" %>
+  <div class="form-intro">
+    <h1>Create a carpool</h1>
+    <p>Enter the trip details. You can share the carpool link after it is created.</p>
+  </div>
+  <%= render "form", carpool: @carpool %>
+</section>

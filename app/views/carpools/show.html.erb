@@ -1,0 +1,39 @@
+<% content_for :title, "#{@carpool.name} carpool — coordination.tools" %>
+<%= turbo_stream_from @carpool %>
+<section class="board-hero">
+  <div class="page-shell">
+    <%= link_to "Back", root_path, class: "back-link" %>
+    <div class="board-title">
+      <h1><%= @carpool.name %></h1>
+      <div class="board-title-actions">
+        <% if current_user == @carpool.user %><%= link_to "Edit", edit_carpool_path(@carpool), class: "button button-light" %><% end %>
+        <button class="button button-light" data-action="clipboard#copy"><span data-clipboard-target="label">Copy link</span></button>
+      </div>
+    </div>
+    <div class="trip-facts">
+      <div><small>Destination</small><strong><%= @carpool.destination %></strong></div>
+      <div><small>Event start time</small><strong><%= @carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></strong></div>
+      <% if @carpool.return_starts_at.present? %><div><small>Return trip starts around</small><strong><%= @carpool.return_starts_at.strftime("%A, %b %-d at %-I:%M %p") %></strong></div><% end %>
+      <% if @carpool.details.present? %><div><small>Notes</small><strong><%= @carpool.details %></strong></div><% end %>
+    </div>
+  </div>
+</section>
+
+<section class="page-shell board-body">
+  <% if notice %><div class="notice"><%= notice %></div><% end %>
+  <% if alert %><div class="error-box"><%= alert %></div><% end %>
+  <%= render "carpools/direction", direction: "outbound", label: "To the event", drivers: @drivers.fetch("outbound", []), riders: @riders.fetch("outbound", []) %>
+  <% if @carpool.return_starts_at.present? %>
+    <%= render "carpools/direction", direction: "return", label: "Return trip", drivers: @drivers.fetch("return", []), riders: @riders.fetch("return", []) %>
+  <% end %>
+
+  <div class="join-panel" id="join">
+    <% if signed_in? %>
+      <div class="join-copy"><h2><%= @ride.direction == "return" ? "Return trip" : "To the event" %>: <%= @ride.driver? ? "Offer a ride" : "Request a ride" %></h2><p>You can edit or remove this entry later.</p></div>
+      <%= render "rides/form", carpool: @carpool, ride: @ride %>
+    <% else %>
+      <div class="join-copy"><h2>Join this carpool</h2><p>Sign in with your name and email to offer or request a ride and see contact details.</p></div>
+      <%= link_to "Sign in to continue", new_session_path(return_to: carpool_path(@carpool)), class: "button button-primary" %>
+    <% end %>
+  </div>
+</section>

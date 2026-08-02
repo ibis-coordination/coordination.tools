@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: coordination
+      POSTGRES_PASSWORD: coordination
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coordination"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+  web:
+    build: .
+    command: bash -c "bin/rails db:prepare && bin/rails server -b 0.0.0.0"
+    environment:
+      DATABASE_URL: postgres://coordination:coordination@db/coordination_tools_development
+      RAILS_ENV: development
+    volumes:
+      - .:/rails
+    ports:
+      - "${PORT:-3100}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

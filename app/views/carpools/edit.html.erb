@@ -1,0 +1,6 @@
+<% content_for :title, "Edit carpool — coordination.tools" %>
+<section class="page-shell form-page">
+  <%= link_to "Back", carpool_path(@carpool), class: "back-link" %>
+  <div class="form-intro"><h1>Edit carpool</h1></div>
+  <%= render "form", carpool: @carpool %>
+</section>
