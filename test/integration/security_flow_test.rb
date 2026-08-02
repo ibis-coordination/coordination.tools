@@ -6,12 +6,15 @@ class SecurityFlowTest < ActionDispatch::IntegrationTest
     @carpool = @organizer.carpools.create!(name: "Beach day", destination: "Ocean Beach", starts_at: 2.days.from_now)
   end
 
-  test "signing in with an existing email cannot change that user's name" do
+  test "claiming an existing email cannot change that user's name or create a session" do
     post session_path, params: { user: { name: "Mallory", email: "organizer@example.com" } }
 
-    assert_redirected_to root_path
+    assert_redirected_to new_session_path
     assert_equal "Organizer", @organizer.reload.name
     assert_equal 1, User.count
+
+    get new_carpool_path
+    assert_redirected_to new_session_path # Mallory is not signed in
   end
 
   test "signing in after a bounce still returns to the requested page" do

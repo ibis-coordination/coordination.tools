@@ -6,16 +6,30 @@ class SessionsController < ApplicationController
 
   def create
     email = session_params[:email].to_s.strip.downcase
-    @user = User.find_or_initialize_by(email: email)
-    @user.name = session_params[:name] if @user.new_record?
 
+    if (existing = User.find_by(email: email))
+      # The email is already claimed: prove ownership via magic link instead
+      # of handing out a session.
+      MagicLinkMailer.sign_in_link(existing).deliver_now
+      redirect_to new_session_path, notice: "That email already has an account. We sent a sign-in link to #{email} — click it to continue."
+      return
+    end
+
+    @user = User.new(name: session_params[:name], email: email)
     if @user.save
-      return_to = session[:return_to]
-      reset_session
-      session[:user_id] = @user.id
-      redirect_to return_to || root_path, notice: "Signed in as #{@user.email}."
+      start_session_for @user, notice: "Signed in as #{@user.email}."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def confirm
+    user = User.find_by_token_for(:magic_link, params[:token])
+    if user
+      user.confirm_email!
+      start_session_for user, notice: "Signed in as #{user.email}."
+    else
+      redirect_to new_session_path, alert: "That sign-in link is invalid or has expired. Enter your email to request a new one."
     end
   end
 
@@ -27,6 +41,13 @@ class SessionsController < ApplicationController
   private
 
   def session_params = params.require(:user).permit(:name, :email)
+
+  def start_session_for(user, notice:)
+    return_to = session[:return_to]
+    reset_session
+    session[:user_id] = user.id
+    redirect_to return_to || root_path, notice: notice
+  end
 
   # Only same-origin paths, so a crafted link cannot redirect elsewhere after sign-in.
   def store_return_to(path)

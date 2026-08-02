@@ -1,0 +1,17 @@
+<% content_for :title, "Your account — coordination.tools" %>
+<section class="page-shell form-page narrow">
+  <h1>Your account</h1>
+  <% if notice %><div class="notice"><%= notice %></div><% end %>
+  <% if alert %><div class="error-box"><%= alert %></div><% end %>
+  <p>Signed in as <strong><%= current_user.email %></strong><%= current_user.email_confirmed? ? " (confirmed)" : "" %>.</p>
+  <% if current_user.email_confirmed? %>
+    <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form" do |form| %>
+      <% if current_user.errors.any? %><div class="error-box"><%= current_user.errors.full_messages.to_sentence %></div><% end %>
+      <div class="field"><%= form.label :name %><%= form.text_field :name, required: true %></div>
+      <%= form.submit "Save name", class: "button button-primary" %>
+    <% end %>
+  <% else %>
+    <p>To edit your name, first confirm your email address with a sign-in link.</p>
+    <%= button_to "Email me a sign-in link", session_path, params: { user: { email: current_user.email } }, class: "button button-primary" %>
+  <% end %>
+</section>

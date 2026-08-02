@@ -1,0 +1,9 @@
+Hi <%= @user.name %>,
+
+Someone (hopefully you) asked to sign in to coordination.tools as <%= @user.email %>.
+
+Sign in with this link (valid for 30 minutes):
+
+<%= @confirm_url %>
+
+If you didn't request it, you can ignore this email — nothing changes unless the link is clicked.

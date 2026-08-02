@@ -15,7 +15,8 @@ module ActiveSupport
 end
 
 class ActionDispatch::IntegrationTest
+  # Signs in via a magic link, the only path for an existing user's email.
   def sign_in_as(user)
-    post session_path, params: { user: { name: user.name, email: user.email } }
+    get confirm_session_path(token: user.generate_token_for(:magic_link))
   end
 end
