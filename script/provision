@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# Provision the DigitalOcean resources for coordination.tools.
+# Idempotent: safe to re-run; existing resources are left alone.
+#
+# Prerequisites:
+#   brew install doctl        # DigitalOcean CLI
+#   doctl auth init           # paste an API token (cloud.digitalocean.com/account/api/tokens)
+#   aws CLI installed         # used only to create the Spaces bucket
+#
+# What it creates:
+#   - SSH key registered with DO (from SSH_PUBKEY_PATH)
+#   - Droplet "coordination-tools" (Ubuntu 24.04, 2 GB, sfo3)
+#   - DNS zone for coordination.tools with an A record at the Droplet
+#     (requires nameserver delegation to DO — the script warns if missing)
+#   - Spaces access key + backup bucket
+#
+# Overridable via environment:
+set -euo pipefail
+
+DROPLET_NAME="${DROPLET_NAME:-coordination-tools}"
+DROPLET_SIZE="${DROPLET_SIZE:-s-1vcpu-2gb}"        # $12/mo
+DROPLET_IMAGE="${DROPLET_IMAGE:-ubuntu-24-04-x64}"
+REGION="${REGION:-sfo3}"
+DOMAIN="${DOMAIN:-coordination.tools}"
+SSH_PUBKEY_PATH="${SSH_PUBKEY_PATH:-$HOME/.ssh/id_ed25519.pub}"
+SSH_KEY_NAME="${SSH_KEY_NAME:-$(whoami)-$(hostname -s)}"
+SPACES_BUCKET="${SPACES_BUCKET:-coordination-tools-backups}"
+SPACES_KEY_NAME="${SPACES_KEY_NAME:-coordination-tools-backup}"
+SPACES_ENDPOINT="https://${REGION}.digitaloceanspaces.com"
+
+step() { printf "\n\033[1m== %s\033[0m\n" "$1"; }
+
+command -v doctl >/dev/null || { echo "doctl not found — brew install doctl && doctl auth init"; exit 1; }
+command -v aws   >/dev/null || { echo "aws CLI not found — brew install awscli"; exit 1; }
+doctl account get >/dev/null || { echo "doctl not authenticated — run: doctl auth init"; exit 1; }
+
+step "SSH key"
+if doctl compute ssh-key list --format Name --no-header | grep -qx "$SSH_KEY_NAME"; then
+  echo "SSH key '$SSH_KEY_NAME' already registered"
+else
+  [ -f "$SSH_PUBKEY_PATH" ] || { echo "No public key at $SSH_PUBKEY_PATH (set SSH_PUBKEY_PATH)"; exit 1; }
+  doctl compute ssh-key import "$SSH_KEY_NAME" --public-key-file "$SSH_PUBKEY_PATH"
+fi
+SSH_KEY_ID=$(doctl compute ssh-key list --format ID,Name --no-header | awk -v n="$SSH_KEY_NAME" '$2==n {print $1}')
+
+step "Droplet"
+DROPLET_IP=$(doctl compute droplet list --format Name,PublicIPv4 --no-header | awk -v n="$DROPLET_NAME" '$1==n {print $2}')
+if [ -n "$DROPLET_IP" ]; then
+  echo "Droplet '$DROPLET_NAME' already exists at $DROPLET_IP"
+else
+  doctl compute droplet create "$DROPLET_NAME" \
+    --size "$DROPLET_SIZE" --image "$DROPLET_IMAGE" --region "$REGION" \
+    --ssh-keys "$SSH_KEY_ID" --wait
+  DROPLET_IP=$(doctl compute droplet list --format Name,PublicIPv4 --no-header | awk -v n="$DROPLET_NAME" '$1==n {print $2}')
+  echo "Created droplet at $DROPLET_IP"
+fi
+
+step "DNS zone + A record"
+if ! doctl compute domain list --format Domain --no-header | grep -qx "$DOMAIN"; then
+  doctl compute domain create "$DOMAIN"
+fi
+CURRENT_A=$(doctl compute domain records list "$DOMAIN" --format ID,Type,Name,Data --no-header | awk '$2=="A" && $3=="@" {print $1" "$4}')
+if [ -z "$CURRENT_A" ]; then
+  doctl compute domain records create "$DOMAIN" --record-type A --record-name "@" --record-data "$DROPLET_IP" --record-ttl 300
+  echo "Created A record @ -> $DROPLET_IP"
+elif [ "$(echo "$CURRENT_A" | awk '{print $2}')" != "$DROPLET_IP" ]; then
+  doctl compute domain records update "$DOMAIN" --record-id "$(echo "$CURRENT_A" | awk '{print $1}')" --record-data "$DROPLET_IP"
+  echo "Updated A record @ -> $DROPLET_IP"
+else
+  echo "A record already points at $DROPLET_IP"
+fi
+if ! dig +short NS "$DOMAIN" | grep -q digitalocean; then
+  echo "WARNING: $DOMAIN is not delegated to DigitalOcean nameservers yet."
+  echo "Set the nameservers at your registrar to:"
+  echo "  ns1.digitalocean.com / ns2.digitalocean.com / ns3.digitalocean.com"
+  echo "Records created here won't resolve until that change propagates."
+fi
+
+step "Spaces access key"
+if doctl spaces keys list --format Name --no-header | grep -qx "$SPACES_KEY_NAME"; then
+  echo "Spaces key '$SPACES_KEY_NAME' already exists — its secret was only shown at creation."
+  echo "If you no longer have it, delete the key (doctl spaces keys list / delete) and re-run."
+  SPACES_ACCESS_KEY=""
+else
+  # Full access rather than per-bucket: the bucket doesn't exist yet, and
+  # this key is what creates it below. Backups are the only Spaces use.
+  KEY_OUT=$(doctl spaces keys create "$SPACES_KEY_NAME" --grants "bucket=;permission=fullaccess" --format AccessKey,SecretKey --no-header)
+  SPACES_ACCESS_KEY=$(echo "$KEY_OUT" | awk '{print $1}')
+  SPACES_SECRET_KEY=$(echo "$KEY_OUT" | awk '{print $2}')
+  echo "Created Spaces key '$SPACES_KEY_NAME'"
+fi
+
+step "Spaces bucket"
+if [ -n "$SPACES_ACCESS_KEY" ]; then
+  export AWS_ACCESS_KEY_ID="$SPACES_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$SPACES_SECRET_KEY"
+fi
+if aws s3api head-bucket --bucket "$SPACES_BUCKET" --endpoint-url "$SPACES_ENDPOINT" 2>/dev/null; then
+  echo "Bucket '$SPACES_BUCKET' already exists"
+elif [ -n "${AWS_ACCESS_KEY_ID:-}" ]; then
+  aws s3api create-bucket --bucket "$SPACES_BUCKET" --endpoint-url "$SPACES_ENDPOINT"
+  echo "Created bucket '$SPACES_BUCKET'"
+else
+  echo "Skipping bucket creation — no Spaces credentials in this run."
+  echo "Create it with your existing key:"
+  echo "  AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... aws s3api create-bucket --bucket $SPACES_BUCKET --endpoint-url $SPACES_ENDPOINT"
+fi
+
+step "Done — values for .kamal/secrets and config"
+echo "Droplet IP:        $DROPLET_IP  (DNS: $DOMAIN)"
+echo "SPACES_BUCKET:     $SPACES_BUCKET"
+echo "SPACES_ENDPOINT:   $SPACES_ENDPOINT"
+if [ -n "${SPACES_ACCESS_KEY:-}" ]; then
+  echo "AWS_ACCESS_KEY_ID:     $SPACES_ACCESS_KEY"
+  echo "AWS_SECRET_ACCESS_KEY: $SPACES_SECRET_KEY"
+  echo "(Copy these into .kamal/secrets now — the secret is not retrievable later.)"
+fi

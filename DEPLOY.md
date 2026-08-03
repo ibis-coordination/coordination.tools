@@ -30,14 +30,27 @@ ssh-add ~/.ssh/id_ed25519   # or whichever key the Droplet trusts
 
 ### 2. DigitalOcean resources
 
-1. **Droplet** — Ubuntu 24.04. The $12/mo 2 GB size is recommended; Postgres,
-   Rails, and the backup container together are tight on 1 GB. Add your SSH
-   key at creation. Kamal installs Docker on it automatically during `kamal setup`.
-2. **DNS** — point an A record for `coordination.tools` at the Droplet's IP.
-   Do this before the first deploy; kamal-proxy needs it to obtain the TLS
-   certificate.
-3. **Spaces bucket** — create a bucket for backups (any region), and generate
-   a Spaces access key pair (API → Spaces Keys).
+`script/provision` creates everything reproducibly: registers your SSH key,
+creates the Droplet (Ubuntu 24.04, 2 GB — Postgres, Rails, and the backup
+container together are tight on 1 GB), the DNS zone + A record, a Spaces
+access key, and the backup bucket. It's idempotent — re-running skips
+whatever already exists.
+
+```sh
+brew install doctl
+doctl auth init      # API token from cloud.digitalocean.com/account/api/tokens
+script/provision     # see the script header for overridable env vars
+```
+
+It prints the Spaces key pair at the end — copy it into `.kamal/secrets`
+immediately; the secret can't be retrieved again later.
+
+**Nameserver delegation (one-time, manual):** DNS records live in
+DigitalOcean's zone, so the domain registrar must point at DO's
+nameservers (`ns1.digitalocean.com`, `ns2.digitalocean.com`,
+`ns3.digitalocean.com`). The script warns until this is done. DNS must
+resolve to the Droplet before the first deploy — kamal-proxy needs it to
+obtain the TLS certificate.
 
 ### 3. Container registry (GHCR)
 
