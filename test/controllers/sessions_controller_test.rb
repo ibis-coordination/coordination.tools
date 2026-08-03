@@ -11,8 +11,8 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   test "signing in still honors a stored return path" do
-    post :create, params: { user: { name: "Alex", email: "alex@example.com" } }, session: { return_to: "/carpools/abc123" }
+    post :create, params: { user: { name: "Alex", email: "alex@example.com" } }, session: { return_to: "/carpool/abc123" }
 
-    assert_redirected_to "/carpools/abc123"
+    assert_redirected_to "/carpool/abc123"
   end
 end
