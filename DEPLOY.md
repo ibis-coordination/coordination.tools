@@ -53,11 +53,12 @@ Create a GitHub personal access token (classic) with `read:packages` and
 
 ### 5. Fill in config
 
-1. In `config/deploy.yml`, replace `YOUR_DROPLET_IP` (two places:
-   `servers` and each accessory), `YOUR_GITHUB_USERNAME`, and the
-   `SPACES_BUCKET` / `SPACES_ENDPOINT` values (endpoint region must match
-   your bucket).
-2. Create the secrets file and fill in real values:
+1. In `config/deploy.yml`, replace `YOUR_GITHUB_USERNAME` (registry
+   section). Servers are addressed by the `coordination.tools` hostname,
+   so there's no IP to fill in — DNS just has to be pointing at the
+   Droplet (step 2 above).
+2. Create the secrets file and fill in real values, including the Spaces
+   bucket name and endpoint:
 
    ```sh
    cp .kamal/secrets.example .kamal/secrets

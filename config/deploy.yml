@@ -1,10 +1,10 @@
 # Deploy this application to a DigitalOcean Droplet with Kamal.
 # Docs: https://kamal-deploy.org
 #
-# Placeholders to fill in before first deploy (see DEPLOY.md):
-#   - YOUR_DROPLET_IP (two places: servers and accessories)
-#   - YOUR_GITHUB_USERNAME (registry)
-#   - the Spaces settings under the backup accessory
+# Servers are addressed as coordination.tools, so DNS must point at the
+# Droplet before the first deploy (required for TLS anyway — see DEPLOY.md).
+# The only placeholder to fill in is YOUR_GITHUB_USERNAME below; everything
+# deployment-specific or sensitive lives in .kamal/secrets (gitignored).
 
 # Name of your application. Used to uniquely configure containers.
 service: coordination-tools
@@ -15,7 +15,7 @@ image: ibis-coordination/coordination-tools
 # Deploy to these servers.
 servers:
   web:
-    - YOUR_DROPLET_IP
+    - coordination.tools
 
 # Enable SSL auto certification via Let's Encrypt (handled by kamal-proxy).
 proxy:
@@ -63,7 +63,7 @@ asset_path: /rails/public/assets
 accessories:
   db:
     image: postgres:17
-    host: YOUR_DROPLET_IP
+    host: coordination.tools
     env:
       clear:
         POSTGRES_USER: coordination_tools
@@ -81,7 +81,7 @@ accessories:
   # not backed up — db:prepare recreates them from the schemas in db/.
   db-backup:
     image: postgres:17-alpine
-    host: YOUR_DROPLET_IP
+    host: coordination.tools
     cmd: sh /backup.sh
     files:
       - config/backup.sh:/backup.sh
@@ -90,10 +90,12 @@ accessories:
         DB_HOST: coordination-tools-db
         POSTGRES_USER: coordination_tools
         POSTGRES_DB: coordination_tools_production
-        SPACES_BUCKET: YOUR_SPACES_BUCKET
-        SPACES_ENDPOINT: https://sfo3.digitaloceanspaces.com
         BACKUP_KEEP: "14"
       secret:
+        # Bucket name and endpoint stay out of the public repo; set them in
+        # .kamal/secrets alongside the access keys.
+        - SPACES_BUCKET
+        - SPACES_ENDPOINT
         - PGPASSWORD
         - AWS_ACCESS_KEY_ID
         - AWS_SECRET_ACCESS_KEY
