@@ -5,6 +5,11 @@
 /config/master.key
 /config/credentials/*.key
 
+# Kamal deploy secrets (commit the .example template only)
+/.kamal/secrets
+/.kamal/secrets.*
+!/.kamal/secrets.example
+
 # Rails runtime files
 /log/*
 !/log/.keep

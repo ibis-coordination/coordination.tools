@@ -1,6 +1,30 @@
+# Ignore git directory.
 .git
+.gitignore
+
+# Ignore CI and deploy config.
+.github
+.kamal
+
+# Ignore bundler config.
+.bundle
+
+# Ignore all environment files.
+.env*
+
+# Ignore key files — the master key is provided at runtime via Kamal secrets,
+# never baked into the image.
+config/master.key
+config/credentials/*.key
+
+# Ignore logfiles, tempfiles, and local storage.
 log/*
 tmp/*
 storage/*
+
+# Ignore development-only Docker files.
+Dockerfile.dev
+compose.yaml
+
+# Ignore test coverage output.
 coverage
-.env*

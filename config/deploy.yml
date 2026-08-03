@@ -1,0 +1,99 @@
+# Deploy this application to a DigitalOcean Droplet with Kamal.
+# Docs: https://kamal-deploy.org
+#
+# Placeholders to fill in before first deploy (see DEPLOY.md):
+#   - YOUR_DROPLET_IP (two places: servers and accessories)
+#   - YOUR_GITHUB_USERNAME (registry)
+#   - the Spaces settings under the backup accessory
+
+# Name of your application. Used to uniquely configure containers.
+service: coordination-tools
+
+# Name of the container image.
+image: ibis-coordination/coordination-tools
+
+# Deploy to these servers.
+servers:
+  web:
+    - YOUR_DROPLET_IP
+
+# Enable SSL auto certification via Let's Encrypt (handled by kamal-proxy).
+proxy:
+  ssl: true
+  host: coordination.tools
+
+# Credentials for your image host.
+registry:
+  server: ghcr.io
+  username: YOUR_GITHUB_USERNAME
+  # A GitHub personal access token with read:packages and write:packages,
+  # supplied via .kamal/secrets.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Build the image on your laptop (Apple Silicon) for the Droplet's amd64 arch.
+builder:
+  arch: amd64
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - COORDINATION_TOOLS_DATABASE_PASSWORD
+    - RESEND_API_KEY
+  clear:
+    # Postgres runs as a Kamal accessory on the same Droplet; containers
+    # resolve each other by name on the kamal Docker network.
+    DB_HOST: coordination-tools-db
+    # Run Solid Queue inside Puma — no separate job container needed on a
+    # single small server.
+    SOLID_QUEUE_IN_PUMA: true
+    WEB_CONCURRENCY: 1
+
+# Aliases for common commands.
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+
+# Bridge fingerprinted assets between versions to avoid 404s during deploys.
+asset_path: /rails/public/assets
+
+accessories:
+  db:
+    image: postgres:17
+    host: YOUR_DROPLET_IP
+    env:
+      clear:
+        POSTGRES_USER: coordination_tools
+        POSTGRES_DB: coordination_tools_production
+      secret:
+        # Same value as COORDINATION_TOOLS_DATABASE_PASSWORD (aliased in
+        # .kamal/secrets).
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
+
+  # Nightly pg_dump of the primary database to DigitalOcean Spaces.
+  # Runs a dump on start and then every 24 hours; keeps the newest
+  # BACKUP_KEEP dumps. The cache/queue/cable databases are intentionally
+  # not backed up — db:prepare recreates them from the schemas in db/.
+  db-backup:
+    image: postgres:17-alpine
+    host: YOUR_DROPLET_IP
+    cmd: sh /backup.sh
+    files:
+      - config/backup.sh:/backup.sh
+    env:
+      clear:
+        DB_HOST: coordination-tools-db
+        POSTGRES_USER: coordination_tools
+        POSTGRES_DB: coordination_tools_production
+        SPACES_BUCKET: YOUR_SPACES_BUCKET
+        SPACES_ENDPOINT: https://sfo3.digitaloceanspaces.com
+        BACKUP_KEEP: "14"
+      secret:
+        - PGPASSWORD
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY

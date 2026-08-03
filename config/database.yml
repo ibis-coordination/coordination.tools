@@ -87,6 +87,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
+    host: <%= ENV["DB_HOST"] %>
     database: coordination_tools_production
     username: coordination_tools
     password: <%= ENV["COORDINATION_TOOLS_DATABASE_PASSWORD"] %>
