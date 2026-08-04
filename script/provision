@@ -77,16 +77,43 @@ if ! dig +short NS "$DOMAIN" | grep -q digitalocean; then
 fi
 
 step "Spaces access key"
-if doctl spaces keys list --format Name --no-header | grep -qx "$SPACES_KEY_NAME"; then
+if doctl spaces keys list -o json | python3 -c 'import json,sys
+def names(o):
+    if isinstance(o, dict):
+        if "name" in o: yield o["name"]
+        for v in o.values(): yield from names(v)
+    if isinstance(o, list):
+        for v in o: yield from names(v)
+print("\n".join(names(json.load(sys.stdin))))' | grep -qx "$SPACES_KEY_NAME"; then
   echo "Spaces key '$SPACES_KEY_NAME' already exists — its secret was only shown at creation."
   echo "If you no longer have it, delete the key (doctl spaces keys list / delete) and re-run."
   SPACES_ACCESS_KEY=""
 else
   # Full access rather than per-bucket: the bucket doesn't exist yet, and
   # this key is what creates it below. Backups are the only Spaces use.
-  KEY_OUT=$(doctl spaces keys create "$SPACES_KEY_NAME" --grants "bucket=;permission=fullaccess" --format AccessKey,SecretKey --no-header)
-  SPACES_ACCESS_KEY=$(echo "$KEY_OUT" | awk '{print $1}')
-  SPACES_SECRET_KEY=$(echo "$KEY_OUT" | awk '{print $2}')
+  # `doctl spaces keys` doesn't support --format like the compute
+  # commands, so parse the JSON output instead.
+  KEY_JSON=$(doctl spaces keys create "$SPACES_KEY_NAME" --grants "bucket=;permission=fullaccess" -o json)
+  SPACES_ACCESS_KEY=$(echo "$KEY_JSON" | python3 -c 'import json,sys
+def find(o):
+    if isinstance(o, dict):
+        if "access_key" in o: return o
+        for v in o.values():
+            if (r := find(v)): return r
+    if isinstance(o, list):
+        for v in o:
+            if (r := find(v)): return r
+print(find(json.load(sys.stdin))["access_key"])')
+  SPACES_SECRET_KEY=$(echo "$KEY_JSON" | python3 -c 'import json,sys
+def find(o):
+    if isinstance(o, dict):
+        if "secret_key" in o: return o
+        for v in o.values():
+            if (r := find(v)): return r
+    if isinstance(o, list):
+        for v in o:
+            if (r := find(v)): return r
+print(find(json.load(sys.stdin))["secret_key"])')
   echo "Created Spaces key '$SPACES_KEY_NAME'"
 fi
 
