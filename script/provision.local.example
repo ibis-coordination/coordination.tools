@@ -1,0 +1,9 @@
+# Copy to script/provision.local (gitignored) and fill in with the DNS
+# records for your deployment. Sourced by script/provision, which defines
+# ensure_record TYPE NAME DATA [PRIORITY].
+#
+# Resend issues these when you add the domain (resend.com -> Domains):
+ensure_record TXT resend._domainkey "p=YOUR_DKIM_PUBLIC_KEY"
+ensure_record MX send "feedback-smtp.us-east-1.amazonses.com." 10
+ensure_record TXT send "v=spf1 include:amazonses.com ~all"
+ensure_record TXT _dmarc "v=DMARC1; p=none;"

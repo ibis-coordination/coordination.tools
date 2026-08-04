@@ -76,6 +76,32 @@ if ! dig +short NS "$DOMAIN" | grep -q digitalocean; then
   echo "Records created here won't resolve until that change propagates."
 fi
 
+step "Additional DNS records (script/provision.local)"
+# Account-specific records (e.g. Resend's DKIM/SPF/DMARC) live in the
+# gitignored script/provision.local as ensure_record calls — see
+# script/provision.local.example. Existence is checked by type+name, so
+# edited record *content* won't be overwritten — delete the record in
+# DO's control panel and re-run if a value is reissued.
+ensure_record() {
+  local type="$1" name="$2" data="$3" priority="${4:-}"
+  if doctl compute domain records list "$DOMAIN" --format Type,Name --no-header | awk -v t="$type" -v n="$name" '$1==t && $2==n {found=1} END {exit !found}'; then
+    echo "$type $name already exists"
+  else
+    if [ -n "$priority" ]; then
+      doctl compute domain records create "$DOMAIN" --record-type "$type" --record-name "$name" --record-data "$data" --record-priority "$priority" --record-ttl 1800 >/dev/null
+    else
+      doctl compute domain records create "$DOMAIN" --record-type "$type" --record-name "$name" --record-data "$data" --record-ttl 1800 >/dev/null
+    fi
+    echo "Created $type $name"
+  fi
+}
+if [ -f "$(dirname "$0")/provision.local" ]; then
+  # shellcheck source=/dev/null
+  . "$(dirname "$0")/provision.local"
+else
+  echo "No script/provision.local found — skipping (see script/provision.local.example)"
+fi
+
 step "Spaces access key"
 if doctl spaces keys list -o json | python3 -c 'import json,sys
 def names(o):

@@ -10,6 +10,9 @@
 /.kamal/secrets.*
 !/.kamal/secrets.example
 
+# Deployment-specific DNS records (commit the .example template only)
+/script/provision.local
+
 # Rails runtime files
 /log/*
 !/log/.keep
