@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+A UX pass driven by a full friction review (see `docs/ux-friction.md`);
+every change below was built test-first against a documented friction point.
+
+### Added
+
+- **Your carpools** on the homepage: the carpools you organize, drive in,
+  or ride in, upcoming first with past ones collapsed.
+- Owners can **delete a carpool** from the edit page.
+- **Email change** on the account page, confirmed via a link sent to the
+  new address (`users.pending_email`).
+- Drivers can **pick up ride requests** directly; the rider is seated,
+  their request removed, and they get an email.
+- Displaced passengers are **emailed** when a driver cancels a ride.
+- Signed-out visitors can **create a carpool in one step** — name/email
+  fields are part of the form; existing emails finish via magic link.
+
+### Changed
+
+- Flash messages render in the layout, so notices are no longer dropped
+  on pages without a local flash block.
+- Sign-in is **email-first**: existing accounts get a sign-in link, new
+  emails are asked for a name (with a disclosure that name and email are
+  visible to participants).
+- Magic-link emails are sent asynchronously and carry the return path in
+  the link, so opening the link on another device lands on the right page.
+- The carpool board has **per-direction join forms**; role/direction
+  choices survive the sign-in detour; claim forms are inline, prefilled
+  from your request or current claim, and refresh-safe; users with an
+  entry see their status instead of a duplicate form; failed posts show
+  their error at the top of the page.
+- Leaving a ride explains the ride request posted on your behalf (and
+  the confirm dialog warns first).
+- Seats labels follow the selected role; the header shows your name;
+  departure times on a different day include the date.
+
 ## [0.1.0] - 2026-08-04
 
 Initial release: the **coordination.tools** suite with one tool.

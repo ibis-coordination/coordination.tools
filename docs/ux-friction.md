@@ -5,6 +5,13 @@ confusing mechanisms, and counterintuitive behavior. Ordered roughly by flow;
 severity tags are a judgment call: **[high]** actively loses users or data,
 **[medium]** causes confusion or rework, **[low]** polish.
 
+> **Status (2026-08-04):** all 31 items were addressed test-first in the
+> commit series following this review (each commit message cites the item
+> numbers it fixes). Two partial resolutions to know about: #3 keeps the
+> naive "event-local time" convention but now states it and dates
+> off-day departures, and #19 was solved by giving each direction section
+> its own join form rather than by inlining forms into the columns.
+
 ## Cross-cutting mechanisms
 
 1. **[high] Flash messages are silently dropped on most pages.** The layout
