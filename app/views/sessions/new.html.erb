@@ -1,7 +1,7 @@
 <% content_for :title, "Sign in — coordination.tools" %>
 <section class="page-shell form-page narrow">
   <h1>Sign in</h1>
-  <p>Enter your name and email. New emails are signed in right away — no password needed. If the email already has an account, we'll send it a sign-in link.</p>
+  <p>Enter your name and email — no password needed. Depending on the email, you'll either be signed in right away or emailed a sign-in link.</p>
   <%= form_with model: @user, url: session_path, class: "paper-form" do |form| %>
     <% if @user.errors.any? %><div class="error-box"><%= @user.errors.full_messages.to_sentence %></div><% end %>
     <div class="field"><%= form.label :name %><%= form.text_field :name, required: true, autofocus: true %></div>

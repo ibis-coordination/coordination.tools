@@ -7,11 +7,19 @@ class SessionsController < ApplicationController
   def create
     email = session_params[:email].to_s.strip.downcase
 
+    # A signed-in user re-submitting their own email is confirming it (from
+    # the account page), not signing in again.
+    if signed_in? && current_user.email == email
+      deliver_magic_link(current_user, return_to: edit_account_path)
+      redirect_to edit_account_path, notice: "We emailed a sign-in link to #{email}. Click it to confirm your address."
+      return
+    end
+
     if (existing = User.find_by(email: email))
       # The email is already claimed: prove ownership via magic link instead
       # of handing out a session.
-      MagicLinkMailer.sign_in_link(existing).deliver_now
-      redirect_to new_session_path, notice: "That email already has an account. We sent a sign-in link to #{email} — click it to continue."
+      deliver_magic_link(existing, return_to: session[:return_to])
+      redirect_to new_session_path, notice: "We emailed a sign-in link to #{email}. Click it to continue."
       return
     end
 
@@ -27,6 +35,7 @@ class SessionsController < ApplicationController
     user = User.find_by_token_for(:magic_link, params[:token])
     if user
       user.confirm_email!
+      store_return_to(params[:return_to])
       start_session_for user, notice: "Signed in as #{user.email}."
     else
       redirect_to new_session_path, alert: "That sign-in link is invalid or has expired. Enter your email to request a new one."
@@ -42,6 +51,13 @@ class SessionsController < ApplicationController
 
   def session_params = params.require(:user).permit(:name, :email)
 
+  # The return path rides along in the emailed link because the link is often
+  # opened in a different browser (a phone's mail app), where this session's
+  # return_to does not exist.
+  def deliver_magic_link(user, return_to:)
+    MagicLinkMailer.sign_in_link(user, return_to: same_origin_path(return_to)).deliver_later
+  end
+
   def start_session_for(user, notice:)
     return_to = session[:return_to]
     reset_session
@@ -49,8 +65,12 @@ class SessionsController < ApplicationController
     redirect_to return_to || root_path, notice: notice
   end
 
-  # Only same-origin paths, so a crafted link cannot redirect elsewhere after sign-in.
   def store_return_to(path)
-    session[:return_to] = path if path.to_s.match?(%r{\A/(?!/)})
+    session[:return_to] = path if same_origin_path(path)
+  end
+
+  # Only same-origin paths, so a crafted link cannot redirect elsewhere after sign-in.
+  def same_origin_path(path)
+    path.to_s.match?(%r{\A/(?!/)}) ? path : nil
   end
 end
