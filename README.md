@@ -20,15 +20,6 @@ To choose another port, run `PORT=3200 docker compose up --build` instead.
 ## Planned tools (not built yet)
 
 * Schedule availability finder
-* Potluck planner
 * Volunteer board
-* Status tracker
-* Check-in page
-* Subgroup generator
-* Queue tracker
-* Cointoss and random selectors
-* Common connection finder
-* Common knowledge establisher
 * Group decision maker
 * Conditional commitment tracker
-* Message deposit box
