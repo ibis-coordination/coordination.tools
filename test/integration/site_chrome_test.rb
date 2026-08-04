@@ -4,7 +4,9 @@ class SiteChromeTest < ActionDispatch::IntegrationTest
   test "the header shows the logo next to the wordmark" do
     get root_path
 
-    assert_select "header .brand img.brand-logo[src='/icon.svg']"
+    # The header uses the PNG: the SVG inverts with the OS color scheme
+    # (for browser tabs), but the site chrome is always light.
+    assert_select "header .brand img.brand-logo[src='/icon.png']"
     assert_select "header .brand", text: /coordination\.tools/
   end
 
