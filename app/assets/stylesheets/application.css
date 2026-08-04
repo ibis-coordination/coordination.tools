@@ -24,7 +24,8 @@ button, input, textarea { font: inherit; }
 .page-shell { width: min(900px, calc(100% - 32px)); margin: 0 auto; }
 
 .site-header { border-bottom: 1px solid var(--border); padding: 16px max(16px, calc((100% - 900px) / 2)); }
-.brand { color: var(--text); font-weight: 600; text-decoration: none; }
+.brand { align-items: center; color: var(--text); display: flex; font-weight: 600; gap: 8px; text-decoration: none; }
+.brand-logo { height: 22px; width: 22px; }
 .site-header { align-items: center; display: flex; justify-content: space-between; }
 .session-nav { align-items: center; display: flex; gap: 12px; font-size: var(--text-sm); }
 .session-nav form { display: inline; }

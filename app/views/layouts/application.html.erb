@@ -26,7 +26,9 @@
 
   <body data-controller="clipboard">
     <header class="site-header">
-      <%= link_to "coordination.tools", root_path, class: "brand" %>
+      <%= link_to root_path, class: "brand" do %>
+        <%= image_tag "/icon.svg", alt: "", class: "brand-logo" %>coordination.tools
+      <% end %>
       <nav class="session-nav">
         <% if signed_in? %>
           <%= link_to current_user.name, edit_account_path %>
@@ -43,6 +45,6 @@
       </div>
     <% end %>
     <main><%= yield %></main>
-    <footer>coordination.tools</footer>
+    <footer>Built by <%= link_to "Ibis Coordination", "https://ibis-coordination.com" %></footer>
   </body>
 </html>
