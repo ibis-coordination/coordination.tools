@@ -1,0 +1,9 @@
+Hi <%= @user.name %>,
+
+You asked to change your coordination.tools email from <%= @user.email %> to <%= @user.pending_email %>.
+
+Confirm the change with this link (valid for 30 minutes):
+
+<%= @confirm_url %>
+
+If you didn't request it, you can ignore this email — nothing changes unless the link is clicked.

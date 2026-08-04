@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   root "home#show"
   resource :session, only: %i[new create destroy]
   get "session/confirm", to: "sessions#confirm", as: :confirm_session
-  resource :account, only: %i[edit update]
+  resource :account, only: %i[edit update] do
+    get :confirm_email
+  end
   get "carpool", to: "carpools#new", as: :new_carpool
   resources :carpools, path: "carpool", only: %i[create show edit update destroy], param: :public_id do
     resources :pickups, only: :create

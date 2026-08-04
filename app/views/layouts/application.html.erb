@@ -29,7 +29,7 @@
       <%= link_to "coordination.tools", root_path, class: "brand" %>
       <nav class="session-nav">
         <% if signed_in? %>
-          <%= link_to current_user.email, edit_account_path %>
+          <%= link_to current_user.name, edit_account_path %>
           <%= button_to "Sign out", session_path, method: :delete %>
         <% else %>
           <%= link_to "Sign in", new_session_path %>

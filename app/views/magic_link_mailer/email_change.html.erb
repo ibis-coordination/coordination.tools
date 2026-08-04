@@ -1,0 +1,4 @@
+<p>Hi <%= @user.name %>,</p>
+<p>You asked to change your coordination.tools email from <%= @user.email %> to <%= @user.pending_email %>.</p>
+<p><%= link_to "Confirm the change", @confirm_url %></p>
+<p>This link works for 30 minutes. If you didn't request it, you can ignore this email — nothing changes unless the link is clicked.</p>

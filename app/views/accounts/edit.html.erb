@@ -2,6 +2,8 @@
 <section class="page-shell form-page narrow">
   <h1>Your account</h1>
   <p>Signed in as <strong><%= current_user.email %></strong><%= current_user.email_confirmed? ? " (confirmed)" : "" %>.</p>
+
+  <h2>Name</h2>
   <% if current_user.email_confirmed? %>
     <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form" do |form| %>
       <% if current_user.errors.any? %><div class="error-box"><%= current_user.errors.full_messages.to_sentence %></div><% end %>
@@ -9,7 +11,18 @@
       <%= form.submit "Save name", class: "button button-primary" %>
     <% end %>
   <% else %>
-    <p>To edit your name, first confirm your email address with a sign-in link.</p>
+    <p>Your name is what other participants see, so to prevent impersonation we ask you to confirm your email address before changing it.</p>
     <%= button_to "Email me a sign-in link", session_path, params: { user: { email: current_user.email } }, class: "button button-primary" %>
+  <% end %>
+
+  <h2 class="account-section">Email</h2>
+  <% if current_user.pending_email %>
+    <p>We're waiting for you to confirm <strong><%= current_user.pending_email %></strong> — check that inbox.
+      Your address stays <%= current_user.email %> until you click the link.</p>
+  <% end %>
+  <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form", namespace: "email_change" do |form| %>
+    <div class="field"><%= form.label :email, "New email address" %><%= form.email_field :email, value: "", required: true, placeholder: "you@example.com" %></div>
+    <p class="form-hint">We'll email the new address a confirmation link; nothing changes until you click it.</p>
+    <%= form.submit "Change email", class: "button button-primary" %>
   <% end %>
 </section>

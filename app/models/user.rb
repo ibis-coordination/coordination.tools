@@ -5,6 +5,12 @@ class User < ApplicationRecord
 
   generates_token_for :magic_link, expires_in: 30.minutes
 
+  # Embedding pending_email invalidates outstanding links whenever a newer
+  # change request replaces it.
+  generates_token_for :email_change, expires_in: 30.minutes do
+    pending_email
+  end
+
   before_validation :normalize_email
 
   validates :name, :email, presence: true
