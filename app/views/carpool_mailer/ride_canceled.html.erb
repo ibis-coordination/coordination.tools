@@ -1,4 +1,4 @@
 <p>Hi <%= @user.name %>,</p>
-<p><%= @driver_name %> canceled their ride for <%= @carpool.name %>, so your seat is gone.</p>
+<p><%= @driver_name %>'s ride for <%= @carpool.name %> was removed, so your seat is gone.</p>
 <p>We moved you back to the ride requests list so other drivers know you still need a seat. If you no longer need one, you can remove your request on the carpool page:</p>
 <p><%= link_to @carpool.name, @carpool_url %></p>

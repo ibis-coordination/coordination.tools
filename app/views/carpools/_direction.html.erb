@@ -32,7 +32,7 @@
     <% if !signed_in? %>
       <div class="join-copy">
         <h3><%= label %>: offer or request a ride</h3>
-        <p>Sign in with your email to post a ride and see contact details.</p>
+        <p>Sign in with your email to offer or request a ride.</p>
       </div>
       <%= link_to "Sign in to continue", new_session_path(return_to: carpool_path(@carpool)), class: "button button-primary" %>
     <% elsif your_ride %>

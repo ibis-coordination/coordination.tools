@@ -12,16 +12,6 @@ class DisplacementTest < ActionDispatch::IntegrationTest
     @claim = @ride.ride_claims.create!(carpool: @carpool, user: @passenger, pickup_location: "Castro", seats: 2)
   end
 
-  test "leaving a ride explains the ride request posted on your behalf" do
-    sign_in_as(@passenger)
-
-    delete carpool_ride_ride_claim_path(@carpool, @ride, @claim)
-    follow_redirect!
-
-    assert_match(/added a ride request/i, response.body)
-    assert_match(/remove it/i, response.body)
-  end
-
   test "canceling a ride emails each displaced passenger" do
     second = User.create!(name: "Jo", email: "jo@example.com")
     @ride.ride_claims.create!(carpool: @carpool, user: second, pickup_location: "Richmond", seats: 1)

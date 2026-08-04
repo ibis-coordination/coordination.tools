@@ -28,37 +28,35 @@ class RideClaimsController < ApplicationController
     render "carpools/show", status: :unprocessable_entity
   end
 
-  # Both sides can end the arrangement: the passenger leaves, or the driver
-  # removes them (consent runs in both directions).
+  # The arrangement can be ended by the passenger, the driver, or the
+  # organizer (moderation). Leaving on your own posts nothing in your name;
+  # being removed reposts your request — without the pickup address, which
+  # was shared with the driver, not the whole board.
   def destroy
     claim = @ride.ride_claims.find_by!(id: params[:id])
-    raise ActiveRecord::RecordNotFound unless claim.user == current_user || @ride.user == current_user
+    authorized = [ claim.user, @ride.user, @carpool.user ].include?(current_user)
+    raise ActiveRecord::RecordNotFound unless authorized
 
     passenger = claim.user
-    reposted = false
     @carpool.with_lock do
-      pickup_location = claim.pickup_location
       seats = claim.seats
       direction = claim.direction
       claim.destroy!
-      unless @carpool.rides.exists?(user: passenger, direction: direction)
+      if passenger != current_user && !@carpool.rides.exists?(user: passenger, direction: direction)
         @carpool.rides.create!(
           user: passenger,
           role: "rider",
           direction: direction,
-          origin: pickup_location,
           seats: seats,
           notes: "Previously assigned to a ride."
         )
-        reposted = true
       end
     end
 
     if passenger == current_user
-      notice = "You left #{@ride.user.name}'s ride."
-      notice += " We added a ride request for you so drivers know you still need a seat — remove it if you no longer do." if reposted
+      notice = "You left #{@ride.user.name}'s ride. If you still need a seat, you can post a new ride request."
     else
-      CarpoolMailer.removed_from_ride(passenger, @carpool, current_user.name).deliver_later
+      CarpoolMailer.removed_from_ride(passenger, @carpool, @ride.user.name).deliver_later
       notice = "#{passenger.name} was moved back to ride requests and emailed."
     end
     redirect_to carpool_path(@carpool), notice: notice

@@ -8,6 +8,7 @@
       <%= form.label :pickup_location, ride.direction == "return" ? "Drop-off location (optional)" : "Pickup location (optional)" %>
       <%= form.text_field :pickup_location %>
     </div>
+    <p class="form-hint">Only <%= ride.user.name %> can see this location.</p>
   </details>
   <%= form.submit switching ? "Switch rides" : "Claim seats", class: "button button-primary" %>
 <% end %>

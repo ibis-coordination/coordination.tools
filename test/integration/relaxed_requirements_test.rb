@@ -26,7 +26,7 @@ class RelaxedRequirementsTest < ActionDispatch::IntegrationTest
     assert ride.origin.blank?
 
     get carpool_path(@carpool)
-    assert_match(/not set — ask Sam/, response.body)
+    assert_match(/not specified/, response.body)
   end
 
   test "a seat can be claimed without a pickup location" do

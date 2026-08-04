@@ -96,11 +96,11 @@ class CarpoolFlowTest < ActionDispatch::IntegrationTest
 
     request = @carpool.rides.find_by!(user: passenger)
     assert_equal "rider", request.role
-    assert_equal "Castro", request.origin
+    assert_nil request.origin # the pickup address is not republished
     assert_equal 2, request.seats
   end
 
-  test "leaving a ride restores the passenger's ride request" do
+  test "leaving a ride removes the claim without posting a request" do
     driver = User.create!(name: "Sam", email: "sam@example.com")
     passenger = User.create!(name: "Alex", email: "alex@example.com")
     ride = @carpool.rides.create!(user: driver, role: "driver", origin: "Mission", seats: 3)
@@ -109,11 +109,8 @@ class CarpoolFlowTest < ActionDispatch::IntegrationTest
 
     delete carpool_ride_ride_claim_path(@carpool, ride, claim)
 
-    request = @carpool.rides.find_by!(user: passenger)
-    assert_equal "rider", request.role
-    assert_equal "Castro", request.origin
-    assert_equal 2, request.seats
     assert_not RideClaim.exists?(claim.id)
+    assert_not @carpool.rides.exists?(user: passenger)
   end
 
   test "outbound and return arrangements are independent" do

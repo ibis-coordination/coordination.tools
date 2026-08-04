@@ -22,7 +22,7 @@ class PassengerRemovalTest < ActionDispatch::IntegrationTest
     assert_not RideClaim.exists?(@claim.id)
     request = @carpool.rides.find_by!(user: @passenger)
     assert_equal "rider", request.role
-    assert_equal "Castro", request.origin
+    assert_nil request.origin
 
     perform_enqueued_jobs
     email = ActionMailer::Base.deliveries.last

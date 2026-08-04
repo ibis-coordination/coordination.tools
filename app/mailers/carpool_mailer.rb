@@ -15,6 +15,13 @@ class CarpoolMailer < ApplicationMailer
     mail to: driver.email, subject: "#{rider_name} accepted your seat offer for #{carpool.name}"
   end
 
+  def entry_removed(user, carpool)
+    @user = user
+    @carpool = carpool
+    @carpool_url = carpool_url(carpool)
+    mail to: user.email, subject: "Your post for #{carpool.name} was removed"
+  end
+
   def removed_from_ride(user, carpool, driver_name)
     @user = user
     @carpool = carpool
