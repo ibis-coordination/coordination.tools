@@ -37,7 +37,6 @@ p { margin: 0 0 12px; }
 .more-details summary { color: var(--link); cursor: pointer; font-size: 14px; margin-bottom: 12px; text-decoration: underline; }
 .claim-details { margin-top: 10px; }
 .claim-details summary { color: var(--link); cursor: pointer; text-decoration: underline; }
-.claim-details .claim-form { border: 1px solid var(--border); margin-top: 10px; padding: 12px; }
 .planned-heading { margin-top: 48px; }
 .tool-card-planned { background: var(--subtle); border-style: dashed; }
 .tool-card-planned h3 { color: var(--muted); }
@@ -83,7 +82,6 @@ p { margin: 0 0 12px; }
 .column-title h3 { margin: 0; }
 .notice { background: #f0f7ef; border: 1px solid #8aab85; margin-bottom: 20px; padding: 10px 12px; }
 .board-actions { align-items: center; display: flex; gap: 10px; margin-bottom: 32px; }
-.board-actions > span { color: var(--muted); font-size: 13px; margin-left: auto; }
 
 .ride-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .column-title { align-items: center; display: flex; justify-content: space-between; margin-bottom: 10px; }
@@ -107,14 +105,13 @@ p { margin: 0 0 12px; }
 .passengers li { align-items: center; display: flex; font-size: 13px; justify-content: space-between; padding: 3px 0; }
 .passengers form { display: inline; }
 .passengers button { background: none; border: 0; color: var(--link); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
-.join-link { display: inline-block; font-size: 14px; margin-top: 12px; }
 .full-label { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
-.claim-form { background: var(--subtle); border-top: 1px solid var(--border); margin: 14px -16px -16px; padding: 16px; }
-.claim-form h4 { margin: 0 0 12px; }
+.claim-form { background: var(--subtle); border: 1px solid var(--border); margin: 10px 0 0; padding: 14px; }
 .claim-form .field { margin-bottom: 12px; }
 .claim-form .button { margin-right: 10px; }
 
 .join-panel { display: grid; grid-template-columns: 200px 1fr; gap: 32px; margin-top: 40px; }
+.join-panel > :only-child { grid-column: 1 / -1; }
 .join-copy p { color: var(--muted); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
 .form-grid .wide { grid-column: 1 / -1; }
@@ -128,7 +125,6 @@ p { margin: 0 0 12px; }
 
 @media (max-width: 680px) {
   .tool-card, .board-title, .board-actions { align-items: flex-start; flex-direction: column; }
-  .board-actions > span { margin-left: 0; }
   .trip-facts, .ride-columns, .join-panel, .form-grid { grid-template-columns: 1fr; }
   .form-grid .wide { grid-column: auto; }
   .join-panel { gap: 12px; }
