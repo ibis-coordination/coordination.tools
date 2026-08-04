@@ -3,11 +3,22 @@
 # needing the gem executable directory on PATH or a local bundle —
 # unlike the rest of this repo's tooling, kamal runs on the host, not
 # in Docker (it needs SSH and the local Docker daemon).
+#
+# The version constraint stands in for a Gemfile.lock pin: bump it
+# deliberately when a new kamal major/minor is verified to work with
+# config/deploy.yml.
+
+KAMAL_VERSION = "~> 2.12"
 
 require "rubygems"
 
 begin
-  load Gem.bin_path("kamal", "kamal")
-rescue Gem::Exception
-  abort "kamal is not installed for #{RUBY_DESCRIPTION.split.first(2).join(" ")} — run: gem install kamal"
+  gem "kamal", KAMAL_VERSION
+rescue Gem::LoadError => e
+  abort <<~MSG
+    kamal #{KAMAL_VERSION} is not available (#{e.message}).
+    Install or update it with: gem install kamal
+  MSG
 end
+
+load Gem.bin_path("kamal", "kamal", KAMAL_VERSION)
