@@ -25,9 +25,11 @@ proxy:
 # Credentials for your image host.
 registry:
   server: ghcr.io
-  username: YOUR_GITHUB_USERNAME
-  # A GitHub personal access token with read:packages and write:packages,
-  # supplied via .kamal/secrets.
+  username: ibis-coordination
+  # A GitHub personal access token supplied via .kamal/secrets.
+  # read:packages suffices for `kamal ship` (CI builds the image);
+  # write:packages is only needed for local build+push deploys
+  # (`kamal setup` / `kamal deploy`).
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -51,7 +53,13 @@ env:
     WEB_CONCURRENCY: 1
 
 # Aliases for common commands.
+#   kamal ship --version=0.1.0  → deploy a CI-built image tag (no `v`
+#                                 prefix — docker/metadata-action strips
+#                                 it). Skips the local build+push; the
+#                                 image must already exist in ghcr.io,
+#                                 built by .github/workflows/docker-publish.yml.
 aliases:
+  ship: deploy --skip-push
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f

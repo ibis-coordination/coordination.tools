@@ -1,3 +1,7 @@
+# Weekly dependency updates. Minor + patch bumps are grouped into a single
+# PR per ecosystem; majors get their own PR for individual review (the
+# Gemfile's pessimistic pins mean a major can't land without an explicit
+# constraint bump anyway).
 version: 2
 updates:
 - package-ecosystem: bundler
@@ -5,8 +9,31 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+  groups:
+    minor-and-patch:
+      applies-to: version-updates
+      update-types:
+      - minor
+      - patch
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+  groups:
+    minor-and-patch:
+      applies-to: version-updates
+      update-types:
+      - minor
+      - patch
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  groups:
+    minor-and-patch:
+      applies-to: version-updates
+      update-types:
+      - minor
+      - patch

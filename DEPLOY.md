@@ -54,8 +54,15 @@ obtain the TLS certificate.
 
 ### 3. Container registry (GHCR)
 
-Create a GitHub personal access token (classic) with `read:packages` and
-`write:packages`. Images push to `ghcr.io/ibis-coordination/coordination-tools`.
+Release images are built by CI: pushing a `v*` tag triggers
+`.github/workflows/docker-publish.yml`, which pushes to
+`ghcr.io/ibis-coordination/coordination-tools` using the workflow's own
+`GITHUB_TOKEN`.
+
+You still need a personal access token (classic) locally so Kamal can log
+the Droplet into ghcr.io: `read:packages` suffices for `kamal ship`
+deploys; add `write:packages` only if you want local build+push deploys
+(`kamal setup` / `kamal deploy`).
 
 ### 4. Resend
 
@@ -66,10 +73,9 @@ Create a GitHub personal access token (classic) with `read:packages` and
 
 ### 5. Fill in config
 
-1. In `config/deploy.yml`, replace `YOUR_GITHUB_USERNAME` (registry
-   section). Servers are addressed by the `coordination.tools` hostname,
-   so there's no IP to fill in — DNS just has to be pointing at the
-   Droplet (step 2 above).
+1. `config/deploy.yml` needs no editing: servers are addressed by the
+   `coordination.tools` hostname (DNS just has to be pointing at the
+   Droplet — step 2 above), and everything else lives in secrets.
 2. Create the secrets file and fill in real values, including the Spaces
    bucket name and endpoint:
 
@@ -100,10 +106,26 @@ curl -I https://coordination.tools/up   # 200 once DNS + TLS are live
 kamal accessory logs db-backup # first dump uploaded to Spaces
 ```
 
-## Everyday commands
+## Releases and everyday deploys
+
+Normal deploys don't build locally — CI builds the image when you push a
+version tag, and `kamal ship` tells the Droplet to pull and swap it:
 
 ```sh
-kamal deploy      # ship the current git HEAD (zero-downtime)
+# 1. Bump VERSION, update CHANGELOG.md, commit.
+# 2. Tag and push (the tag push triggers the image build):
+git tag v0.2.0 && git push origin main --tags
+# 3. Once the Actions build is green:
+kamal ship --version=0.2.0    # note: no `v` prefix — docker convention
+```
+
+`kamal ship` is an alias for `deploy --skip-push`; the image must already
+exist in ghcr.io. CI-built images carry the `service=coordination-tools`
+label Kamal requires — without it Kamal refuses to manage the container
+(learned the hard way on collectiveplayer.games).
+
+```sh
+kamal deploy      # local build+push of git HEAD (needs write:packages PAT)
 kamal console     # rails console on the server
 kamal logs        # tail app logs
 kamal shell       # bash in the app container
