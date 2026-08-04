@@ -3,4 +3,9 @@
   <%= link_to "Back", carpool_path(@carpool), class: "back-link" %>
   <div class="form-intro"><h1>Edit carpool</h1></div>
   <%= render "form", carpool: @carpool %>
+  <div class="danger-zone">
+    <%= button_to "Delete this carpool", carpool_path(@carpool), method: :delete,
+          class: "button button-danger",
+          form: { data: { turbo_confirm: "Delete #{@carpool.name}? All rides and seat claims will be removed. This cannot be undone." } } %>
+  </div>
 </section>

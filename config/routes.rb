@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get "session/confirm", to: "sessions#confirm", as: :confirm_session
   resource :account, only: %i[edit update]
   get "carpool", to: "carpools#new", as: :new_carpool
-  resources :carpools, path: "carpool", only: %i[create show edit update], param: :public_id do
+  resources :carpools, path: "carpool", only: %i[create show edit update destroy], param: :public_id do
     resources :rides, only: %i[create edit update destroy] do
       resources :ride_claims, only: %i[create destroy], path: "claims"
     end

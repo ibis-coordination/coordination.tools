@@ -1,6 +1,6 @@
 class CarpoolsController < ApplicationController
   before_action :require_user, except: :show
-  before_action :set_owned_carpool, only: %i[edit update]
+  before_action :set_owned_carpool, only: %i[edit update destroy]
   def new
     @carpool = Carpool.new(starts_at: 1.week.from_now.change(min: 0))
   end
@@ -22,6 +22,11 @@ class CarpoolsController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @carpool.destroy!
+    redirect_to root_path, notice: "The #{@carpool.name} carpool was deleted."
   end
 
   def show

@@ -42,6 +42,11 @@ p { margin: 0 0 12px; }
 .button-primary { background: #222; border-color: #222; color: #fff; }
 .button-primary:hover { background: #444; }
 .button-light, .button-outline { background: #fff; }
+.button-danger { background: #fff; border-color: #b44; color: #b44; }
+.button-danger:hover { background: #fff1f1; }
+.danger-zone { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 20px; }
+.past-carpools { margin-top: 16px; }
+.past-carpools summary { color: var(--muted); cursor: pointer; margin-bottom: 12px; }
 .back-link { display: inline-block; margin-bottom: 28px; }
 
 .form-page { padding: 40px 0 80px; }

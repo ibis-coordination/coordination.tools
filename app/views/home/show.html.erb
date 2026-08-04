@@ -4,6 +4,34 @@
   <p class="hero-copy">Practical tools for solving common coordination problems.</p>
 </section>
 
+<% if signed_in? && (@upcoming_carpools.any? || @past_carpools.any?) %>
+  <section class="tool-section page-shell" id="your-carpools">
+    <h2>Your carpools</h2>
+    <% @upcoming_carpools.each do |carpool| %>
+      <div class="tool-card">
+        <div>
+          <h3><%= link_to carpool.name, carpool_path(carpool) %></h3>
+          <p><%= carpool.destination %> — <%= carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></p>
+        </div>
+        <%= link_to "Open", carpool_path(carpool), class: "button button-light" %>
+      </div>
+    <% end %>
+    <% if @past_carpools.any? %>
+      <details class="past-carpools">
+        <summary><%= pluralize(@past_carpools.size, "past carpool") %></summary>
+        <% @past_carpools.each do |carpool| %>
+          <div class="tool-card">
+            <div>
+              <h3><%= link_to carpool.name, carpool_path(carpool) %></h3>
+              <p><%= carpool.destination %> — <%= carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></p>
+            </div>
+          </div>
+        <% end %>
+      </details>
+    <% end %>
+  </section>
+<% end %>
+
 <section class="tool-section page-shell" id="tools">
   <h2>Tools</h2>
   <div class="tool-card">
