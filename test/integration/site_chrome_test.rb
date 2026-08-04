@@ -4,10 +4,15 @@ class SiteChromeTest < ActionDispatch::IntegrationTest
   test "the header shows the logo next to the wordmark" do
     get root_path
 
-    # The header uses the PNG: the SVG inverts with the OS color scheme
-    # (for browser tabs), but the site chrome is always light.
-    assert_select "header .brand img.brand-logo[src='/icon.png']"
+    # The SVG inverts with the OS color scheme, matching the site chrome.
+    assert_select "header .brand img.brand-logo[src='/icon.svg']"
     assert_select "header .brand", text: /coordination\.tools/
+  end
+
+  test "the page declares support for light and dark color schemes" do
+    get root_path
+
+    assert_select "meta[name='color-scheme'][content='light dark']"
   end
 
   test "the footer credits Ibis Coordination with a link" do

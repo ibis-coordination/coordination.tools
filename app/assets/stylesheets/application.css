@@ -1,10 +1,25 @@
 :root {
+  color-scheme: light dark;
+
+  /* Colors — every color in this file goes through these variables;
+     the dark block below overrides them for prefers-color-scheme: dark. */
   --text: #222;
   --muted: #666;
   --border: #ccc;
   --background: #fff;
   --subtle: #f6f6f6;
+  --surface: #fff;          /* inputs, light buttons */
+  --hover: #eee;
+  --selected: #ddd;
+  --control-border: #999;   /* inputs and buttons — darker than --border for affordance */
   --link: #1259a7;
+  --primary-bg: #222;
+  --primary-fg: #fff;
+  --primary-hover: #444;
+  --danger: #b44;
+  --danger-subtle: #fff1f1;
+  --success: #8aab85;
+  --success-subtle: #f0f7ef;
 
   /* Type scale — the only font sizes used anywhere:
      sm   secondary text: nav, hints, meta, counters, tags, summaries
@@ -15,6 +30,28 @@
   --text-base: 16px;
   --text-lg: 20px;
   --text-xl: 28px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e3e3e3;
+    --muted: #9d9d9d;
+    --border: #3d3d3d;
+    --background: #161616;
+    --subtle: #1f1f1f;
+    --surface: #1c1c1c;
+    --hover: #333;
+    --selected: #4a4a4a;
+    --control-border: #666;
+    --link: #8ab4f8;
+    --primary-bg: #e3e3e3;
+    --primary-fg: #161616;
+    --primary-hover: #fff;
+    --danger: #d98181;
+    --danger-subtle: #341c1c;
+    --success: #6b8f66;
+    --success-subtle: #1c271a;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -53,13 +90,13 @@ p { margin: 0 0 12px; }
 .tool-card-planned h3 { color: var(--muted); }
 .planned-tag { border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-size: var(--text-sm); padding: 4px 10px; white-space: nowrap; }
 
-.button { background: var(--subtle); border: 1px solid #999; border-radius: 4px; color: var(--text); cursor: pointer; display: inline-block; font-weight: 500; padding: 9px 14px; text-decoration: none; }
-.button:hover { background: #eee; }
-.button-primary { background: #222; border-color: #222; color: #fff; }
-.button-primary:hover { background: #444; }
-.button-light, .button-outline { background: #fff; }
-.button-danger { background: #fff; border-color: #b44; color: #b44; }
-.button-danger:hover { background: #fff1f1; }
+.button { background: var(--subtle); border: 1px solid var(--control-border); border-radius: 4px; color: var(--text); cursor: pointer; display: inline-block; font-weight: 500; padding: 9px 14px; text-decoration: none; }
+.button:hover { background: var(--hover); }
+.button-primary { background: var(--primary-bg); border-color: var(--primary-bg); color: var(--primary-fg); }
+.button-primary:hover { background: var(--primary-hover); }
+.button-light, .button-outline { background: var(--surface); }
+.button-danger { background: var(--surface); border-color: var(--danger); color: var(--danger); }
+.button-danger:hover { background: var(--danger-subtle); }
 .danger-zone { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 20px; }
 .past-carpools { margin-top: 16px; }
 .past-carpools summary { color: var(--muted); cursor: pointer; font-size: var(--text-sm); margin-bottom: 12px; }
@@ -70,12 +107,12 @@ p { margin: 0 0 12px; }
 .paper-form, .join-panel { border: 1px solid var(--border); margin-top: 28px; padding: 24px; }
 .field { margin-bottom: 18px; }
 .field label { display: block; font-weight: 600; margin-bottom: 6px; }
-.field input, .field textarea { background: #fff; border: 1px solid #999; border-radius: 3px; color: var(--text); padding: 9px 10px; width: 100%; }
-.field input:focus, .field textarea:focus { border-color: #333; outline: 2px solid #ccc; }
+.field input, .field textarea { background: var(--surface); border: 1px solid var(--control-border); border-radius: 3px; color: var(--text); padding: 9px 10px; width: 100%; }
+.field input:focus, .field textarea:focus { border-color: var(--text); outline: 2px solid var(--border); }
 .form-submit { display: flex; align-items: center; gap: 16px; }
 .form-hint { color: var(--muted); font-size: var(--text-sm); margin: -6px 0 16px; }
 .account-section { margin-top: 40px; }
-.error-box { background: #fff1f1; border: 1px solid #b44; margin-bottom: 18px; padding: 10px; }
+.error-box { background: var(--danger-subtle); border: 1px solid var(--danger); margin-bottom: 18px; padding: 10px; }
 .flash { padding-top: 20px; }
 .flash .notice, .flash .error-box { margin-bottom: 0; }
 
@@ -91,7 +128,7 @@ p { margin: 0 0 12px; }
 .direction-section + .direction-section { border-top: 1px solid var(--border); margin-top: 48px; padding-top: 40px; }
 .direction-title { font-size: var(--text-lg); }
 .column-title h3 { margin: 0; }
-.notice { background: #f0f7ef; border: 1px solid #8aab85; margin-bottom: 20px; padding: 10px 12px; }
+.notice { background: var(--success-subtle); border: 1px solid var(--success); margin-bottom: 20px; padding: 10px 12px; }
 .board-actions { align-items: center; display: flex; gap: 10px; margin-bottom: 32px; }
 
 .ride-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -131,9 +168,9 @@ p { margin: 0 0 12px; }
 .role-toggle { display: flex; margin-bottom: 20px; }
 .role-toggle label { flex: 1; }
 .role-toggle input { position: absolute; opacity: 0; }
-.role-toggle span { border: 1px solid #999; cursor: pointer; display: block; padding: 9px; text-align: center; }
+.role-toggle span { border: 1px solid var(--control-border); cursor: pointer; display: block; padding: 9px; text-align: center; }
 .role-toggle label + label span { border-left: 0; }
-.role-toggle input:checked + span { background: #ddd; font-weight: 600; }
+.role-toggle input:checked + span { background: var(--selected); font-weight: 600; }
 .ride-form > .button { margin-top: 4px; }
 
 @media (max-width: 680px) {
