@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-08-04
+
+Branding and dark mode.
+
+### Added
+
+- **Logo and favicon**: the Ibis Coordination octagram (rotated 22.5° so
+  one point faces up) replaces the default Rails icon and appears in the
+  header next to the wordmark. The SVG favicon inverts automatically in
+  dark mode.
+- **Automatic dark mode**: the site follows the OS color scheme. Every
+  color in the stylesheet goes through `:root` custom properties, with a
+  `prefers-color-scheme: dark` block overriding the palette; native form
+  controls and scrollbars adapt via `color-scheme`.
+- The footer credits **Ibis Coordination** with a link to
+  ibis-coordination.com.
+
 ## [0.2.0] - 2026-08-04
 
 A UX and safety pass driven by a full friction review (see
