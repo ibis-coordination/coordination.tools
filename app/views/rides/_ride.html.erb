@@ -14,7 +14,7 @@
               <li>
                 <span><%= claim.user.name %> — <%= pluralize(claim.seats, "seat") %> — <%= claim.pickup_location %><% if signed_in? %> — <%= mail_to claim.user.email %><% end %></span>
                 <% if current_user == claim.user %>
-                  <%= button_to "Leave ride", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Leave this ride?" } } %>
+                  <%= button_to "Leave ride", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Leave this ride? We'll add a ride request for you so drivers know you still need a seat — you can remove it afterward." } } %>
                 <% end %>
               </li>
             <% end %>

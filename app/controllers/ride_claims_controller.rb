@@ -30,6 +30,7 @@ class RideClaimsController < ApplicationController
 
   def destroy
     claim = @ride.ride_claims.find_by!(id: params[:id], user: current_user)
+    reposted = false
     @carpool.with_lock do
       pickup_location = claim.pickup_location
       seats = claim.seats
@@ -44,9 +45,12 @@ class RideClaimsController < ApplicationController
           seats: seats,
           notes: "Previously assigned to a ride."
         )
+        reposted = true
       end
     end
-    redirect_to carpool_path(@carpool), notice: "You left #{@ride.user.name}'s ride."
+    notice = "You left #{@ride.user.name}'s ride."
+    notice += " We added a ride request for you so drivers know you still need a seat — remove it if you no longer do." if reposted
+    redirect_to carpool_path(@carpool), notice: notice
   end
 
   private

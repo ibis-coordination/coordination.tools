@@ -30,6 +30,7 @@ class RidesController < ApplicationController
   end
 
   def destroy
+    displaced = []
     @carpool.with_lock do
       if @ride.driver?
         displaced = @ride.ride_claims.includes(:user).map do |claim|
@@ -50,7 +51,15 @@ class RidesController < ApplicationController
       end
       @ride.destroy!
     end
-    redirect_to carpool_path(@carpool), notice: "Your entry was removed."
+    displaced.each do |passenger|
+      CarpoolMailer.ride_canceled(passenger[:user], @carpool, current_user.name).deliver_later
+    end
+    notice = if displaced.any?
+      "Your ride was removed. We moved #{helpers.pluralize(displaced.size, "passenger")} to ride requests and emailed them."
+    else
+      "Your entry was removed."
+    end
+    redirect_to carpool_path(@carpool), notice: notice
   end
 
   private
