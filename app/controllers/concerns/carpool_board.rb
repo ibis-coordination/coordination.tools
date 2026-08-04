@@ -8,5 +8,7 @@ module CarpoolBoard
     @riders = @carpool.rides.where(role: "rider").includes(:user).order(:created_at).group_by(&:direction)
     @current_claims = current_user ? @carpool.ride_claims.where(user: current_user).index_by(&:direction) : {}
     @your_rides = current_user ? @carpool.rides.where(user: current_user).index_by(&:direction) : {}
+    @pending_offers = current_user ? @carpool.seat_offers.pending.where(user: current_user).index_by(&:ride_id) : {}
+    @sent_offers = current_user ? @carpool.seat_offers.where(ride: @carpool.rides.where(user: current_user)).index_by { |o| [ o.ride_id, o.user_id ] } : {}
   end
 end

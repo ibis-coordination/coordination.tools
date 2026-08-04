@@ -2,6 +2,7 @@ class Ride < ApplicationRecord
   belongs_to :carpool
   belongs_to :user
   has_many :ride_claims, dependent: :destroy
+  has_many :seat_offers, dependent: :destroy
 
   after_commit -> { broadcast_refresh_to carpool }
 

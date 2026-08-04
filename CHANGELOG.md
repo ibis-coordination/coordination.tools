@@ -17,8 +17,12 @@ every change below was built test-first against a documented friction point.
 - Owners can **delete a carpool** from the edit page.
 - **Email change** on the account page, confirmed via a link sent to the
   new address (`users.pending_email`).
-- Drivers can **pick up ride requests** directly; the rider is seated,
-  their request removed, and they get an email.
+- Drivers can **offer a seat** to a ride request; the rider is emailed
+  and chooses to accept or decline — nothing is booked until they
+  accept, and a declined offer can't be repeated. (Replaces an earlier
+  direct-pickup design that seated riders without their consent.)
+- Drivers can **remove a passenger** from their ride; the passenger is
+  moved back to ride requests and emailed.
 - Displaced passengers are **emailed** when a driver cancels a ride.
 - Signed-out visitors can **create a carpool in one step** — name/email
   fields are part of the form; existing emails finish via magic link.

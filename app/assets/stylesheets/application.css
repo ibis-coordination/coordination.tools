@@ -106,6 +106,8 @@ p { margin: 0 0 12px; }
 .passengers form { display: inline; }
 .passengers button { background: none; border: 0; color: var(--link); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
 .full-label { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+.offer-banner { background: var(--subtle); border: 1px solid var(--border); margin-top: 12px; padding: 12px; }
+.offer-banner form { display: inline-block; margin-right: 8px; }
 .claim-form { background: var(--subtle); border: 1px solid var(--border); margin: 10px 0 0; padding: 14px; }
 .claim-form .field { margin-bottom: 12px; }
 .claim-form .button { margin-right: 10px; }

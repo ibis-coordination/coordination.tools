@@ -2,6 +2,7 @@ class Carpool < ApplicationRecord
   belongs_to :user
   has_many :rides, dependent: :destroy
   has_many :ride_claims, dependent: :destroy
+  has_many :seat_offers, dependent: :destroy
 
   before_validation :set_public_id, on: :create
   before_validation :default_name_from_destination

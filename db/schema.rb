@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_202650) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_205827) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_202650) do
     t.index ["user_id"], name: "index_rides_on_user_id"
   end
 
+  create_table "seat_offers", force: :cascade do |t|
+    t.bigint "carpool_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "declined_at"
+    t.bigint "ride_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["carpool_id"], name: "index_seat_offers_on_carpool_id"
+    t.index ["ride_id", "user_id"], name: "index_seat_offers_on_ride_id_and_user_id", unique: true
+    t.index ["ride_id"], name: "index_seat_offers_on_ride_id"
+    t.index ["user_id"], name: "index_seat_offers_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -75,4 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_202650) do
   add_foreign_key "ride_claims", "users"
   add_foreign_key "rides", "carpools"
   add_foreign_key "rides", "users"
+  add_foreign_key "seat_offers", "carpools"
+  add_foreign_key "seat_offers", "rides"
+  add_foreign_key "seat_offers", "users"
 end

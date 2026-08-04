@@ -28,17 +28,22 @@ class RideClaimsController < ApplicationController
     render "carpools/show", status: :unprocessable_entity
   end
 
+  # Both sides can end the arrangement: the passenger leaves, or the driver
+  # removes them (consent runs in both directions).
   def destroy
-    claim = @ride.ride_claims.find_by!(id: params[:id], user: current_user)
+    claim = @ride.ride_claims.find_by!(id: params[:id])
+    raise ActiveRecord::RecordNotFound unless claim.user == current_user || @ride.user == current_user
+
+    passenger = claim.user
     reposted = false
     @carpool.with_lock do
       pickup_location = claim.pickup_location
       seats = claim.seats
       direction = claim.direction
       claim.destroy!
-      unless @carpool.rides.exists?(user: current_user, direction: direction)
+      unless @carpool.rides.exists?(user: passenger, direction: direction)
         @carpool.rides.create!(
-          user: current_user,
+          user: passenger,
           role: "rider",
           direction: direction,
           origin: pickup_location,
@@ -48,8 +53,14 @@ class RideClaimsController < ApplicationController
         reposted = true
       end
     end
-    notice = "You left #{@ride.user.name}'s ride."
-    notice += " We added a ride request for you so drivers know you still need a seat — remove it if you no longer do." if reposted
+
+    if passenger == current_user
+      notice = "You left #{@ride.user.name}'s ride."
+      notice += " We added a ride request for you so drivers know you still need a seat — remove it if you no longer do." if reposted
+    else
+      CarpoolMailer.removed_from_ride(passenger, @carpool, current_user.name).deliver_later
+      notice = "#{passenger.name} was moved back to ride requests and emailed."
+    end
     redirect_to carpool_path(@carpool), notice: notice
   end
 

@@ -8,7 +8,12 @@ Rails.application.routes.draw do
   end
   get "carpool", to: "carpools#new", as: :new_carpool
   resources :carpools, path: "carpool", only: %i[create show edit update destroy], param: :public_id do
-    resources :pickups, only: :create
+    resources :seat_offers, only: :create, path: "offers" do
+      member do
+        post :accept
+        post :decline
+      end
+    end
     resources :rides, only: %i[create edit update destroy] do
       resources :ride_claims, only: %i[create destroy], path: "claims"
     end

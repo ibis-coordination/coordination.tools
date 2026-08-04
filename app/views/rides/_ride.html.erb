@@ -18,6 +18,8 @@
                 <span><%= claim.user.name %> — <%= pluralize(claim.seats, "seat") %><% if claim.pickup_location.present? %> — <%= claim.pickup_location %><% end %><% if signed_in? %> — <%= mail_to claim.user.email %><% end %></span>
                 <% if current_user == claim.user %>
                   <%= button_to "Leave ride", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Leave this ride? We'll add a ride request for you so drivers know you still need a seat — you can remove it afterward." } } %>
+                <% elsif current_user == ride.user %>
+                  <%= button_to "Remove", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Remove #{claim.user.name} from your ride? They'll be moved back to ride requests and emailed." } } %>
                 <% end %>
               </li>
             <% end %>
@@ -26,7 +28,13 @@
       <% end %>
 
       <% unless @your_rides[ride.direction]&.driver? || current_claim&.ride_id == ride.id || !signed_in? %>
-        <% if !ride.available_seats.positive? %>
+        <% if (offer = @pending_offers[ride.id]) %>
+          <div class="offer-banner">
+            <p><strong><%= ride.user.name %> offered you a seat.</strong> The seat is not booked until you accept.</p>
+            <%= button_to "Accept", accept_carpool_seat_offer_path(@carpool, offer), method: :post, class: "button button-primary" %>
+            <%= button_to "Decline", decline_carpool_seat_offer_path(@carpool, offer), method: :post, class: "button button-light" %>
+          </div>
+        <% elsif !ride.available_seats.positive? %>
           <p class="full-label">This ride is full.</p>
         <% else %>
           <% failed_claim = (@ride_claim if @claim_ride == ride) %>
@@ -41,8 +49,13 @@
         <% end %>
       <% end %>
     <% elsif signed_in? && current_user != ride.user && (my_drive = @your_rides[ride.direction])&.driver? %>
-      <% if my_drive.available_seats >= ride.seats %>
-        <%= button_to "Pick up #{ride.user.name}", carpool_pickups_path(@carpool), params: { ride_id: ride.id }, class: "button button-primary pickup-button", form: { data: { turbo_confirm: "Add #{ride.user.name} to your ride (#{pluralize(ride.seats, "seat")}, from #{ride.origin})? We'll email them the news." } } %>
+      <% offer = @sent_offers[[ my_drive.id, ride.user.id ]] %>
+      <% if offer&.pending? %>
+        <p class="full-label">Offer sent to <%= ride.user.name %>.</p>
+      <% elsif offer %>
+        <p class="full-label"><%= ride.user.name %> declined your offer.</p>
+      <% elsif my_drive.available_seats >= ride.seats %>
+        <%= button_to "Offer #{ride.user.name} a seat", carpool_seat_offers_path(@carpool), params: { ride_id: ride.id }, class: "button button-primary", form: { data: { turbo_confirm: "Offer #{ride.user.name} a seat in your ride? They will be emailed and can accept or decline." } } %>
       <% else %>
         <p class="full-label">Not enough free seats in your ride.</p>
       <% end %>

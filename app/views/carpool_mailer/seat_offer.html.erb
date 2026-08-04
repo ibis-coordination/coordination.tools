@@ -1,0 +1,4 @@
+<p>Hi <%= @user.name %>,</p>
+<p><%= @driver_name %> saw your ride request for <%= @carpool.name %> and offered you a seat in their ride.</p>
+<p>You can accept or decline the offer on the carpool page:</p>
+<p><%= link_to @carpool.name, @carpool_url %></p>
