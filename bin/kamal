@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# Runs the globally installed kamal gem (`gem install kamal`) without
+# needing the gem executable directory on PATH or a local bundle —
+# unlike the rest of this repo's tooling, kamal runs on the host, not
+# in Docker (it needs SSH and the local Docker daemon).
+
+require "rubygems"
+
+begin
+  load Gem.bin_path("kamal", "kamal")
+rescue Gem::Exception
+  abort "kamal is not installed for #{RUBY_DESCRIPTION.split.first(2).join(" ")} — run: gem install kamal"
+end

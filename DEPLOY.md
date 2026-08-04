@@ -9,7 +9,7 @@ Production runs on a single DigitalOcean Droplet, deployed with
 - **coordination-tools-db-backup** — nightly `pg_dump` of the primary database
   to DigitalOcean Spaces (`config/backup.sh`)
 
-Deploys are manual: nothing ships until you run `kamal deploy` from your
+Deploys are manual: nothing ships until you run `bin/kamal deploy` from your
 laptop.
 
 ## One-time setup
@@ -60,9 +60,9 @@ Release images are built by CI: pushing a `v*` tag triggers
 `GITHUB_TOKEN`.
 
 You still need a personal access token (classic) locally so Kamal can log
-the Droplet into ghcr.io: `read:packages` suffices for `kamal ship`
+the Droplet into ghcr.io: `read:packages` suffices for `bin/kamal ship`
 deploys; add `write:packages` only if you want local build+push deploys
-(`kamal setup` / `kamal deploy`).
+(`bin/kamal setup` / `bin/kamal deploy`).
 
 ### 4. Resend
 
@@ -90,7 +90,7 @@ deploys; add `write:packages` only if you want local build+push deploys
 ### 6. First deploy
 
 ```sh
-kamal setup
+bin/kamal setup
 ```
 
 This installs Docker on the Droplet, starts the Postgres and backup
@@ -101,36 +101,36 @@ accessories, builds and pushes the app image, and boots the app. On boot,
 Verify:
 
 ```sh
-kamal app logs                 # app booted cleanly
+bin/kamal app logs                 # app booted cleanly
 curl -I https://coordination.tools/up   # 200 once DNS + TLS are live
-kamal accessory logs db-backup # first dump uploaded to Spaces
+bin/kamal accessory logs db-backup # first dump uploaded to Spaces
 ```
 
 ## Releases and everyday deploys
 
 Normal deploys don't build locally — CI builds the image when you push a
-version tag, and `kamal ship` tells the Droplet to pull and swap it:
+version tag, and `bin/kamal ship` tells the Droplet to pull and swap it:
 
 ```sh
 # 1. Bump VERSION, update CHANGELOG.md, commit.
 # 2. Tag and push (the tag push triggers the image build):
 git tag v0.2.0 && git push origin main --tags
 # 3. Once the Actions build is green:
-kamal ship --version=0.2.0    # note: no `v` prefix — docker convention
+bin/kamal ship --version=0.2.0    # note: no `v` prefix — docker convention
 ```
 
-`kamal ship` is an alias for `deploy --skip-push`; the image must already
+`bin/kamal ship` is an alias for `deploy --skip-push`; the image must already
 exist in ghcr.io. CI-built images carry the `service=coordination-tools`
 label Kamal requires — without it Kamal refuses to manage the container
 (learned the hard way on collectiveplayer.games).
 
 ```sh
-kamal deploy      # local build+push of git HEAD (needs write:packages PAT)
-kamal console     # rails console on the server
-kamal logs        # tail app logs
-kamal shell       # bash in the app container
-kamal dbc         # rails dbconsole (psql)
-kamal rollback    # list/return to a previous version
+bin/kamal deploy      # local build+push of git HEAD (needs write:packages PAT)
+bin/kamal console     # rails console on the server
+bin/kamal logs        # tail app logs
+bin/kamal shell       # bash in the app container
+bin/kamal dbc         # rails dbconsole (psql)
+bin/kamal rollback    # list/return to a previous version
 ```
 
 ## Backups
@@ -142,7 +142,7 @@ primary database on container start and then every 24 hours, uploads
 cache/queue/cable databases are not backed up — they're recreated by
 `db:prepare`.
 
-After changing backup settings: `kamal accessory reboot db-backup`.
+After changing backup settings: `bin/kamal accessory reboot db-backup`.
 
 ### Restore
 
