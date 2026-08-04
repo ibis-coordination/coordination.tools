@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2026-08-04
 
-A UX pass driven by a full friction review (see `docs/ux-friction.md`);
-every change below was built test-first against a documented friction point.
+A UX and safety pass driven by a full friction review (see
+`docs/ux-friction.md`) and a safety review of the coordination
+mechanics; every change was built test-first.
 
 ### Added
 
@@ -23,12 +24,26 @@ every change below was built test-first against a documented friction point.
   direct-pickup design that seated riders without their consent.)
 - Drivers can **remove a passenger** from their ride; the passenger is
   moved back to ride requests and emailed.
-- Displaced passengers are **emailed** when a driver cancels a ride.
+- **Organizer moderation**: the carpool owner can remove any ride or
+  claim from their event; those affected are emailed.
+- Displaced passengers are **emailed** when a driver's ride is removed.
 - Signed-out visitors can **create a carpool in one step** — name/email
   fields are part of the form; existing emails finish via magic link.
 
 ### Changed
 
+- **Minimal forms**: only trip name, your name/email, and seat counts
+  are required (seats default to 1). Everything else — destination
+  address, times, locations, notes — is optional inside a collapsed
+  "Add more details" section, with required fields marked `*` and
+  grouped first. Blank values degrade to "TBD" / "not specified".
+- **Least-privilege visibility**: contact emails are shown only to
+  yourself, the organizer, and the people you ride with; pickup
+  addresses only to the driver and that passenger (the claim form says
+  so).
+- **Repost consent**: leaving a ride yourself no longer posts a request
+  in your name; automatic reposts after removal or cancellation no
+  longer republish the pickup address.
 - Flash messages render in the layout, so notices are no longer dropped
   on pages without a local flash block.
 - Sign-in is **email-first**: existing accounts get a sign-in link, new
@@ -41,10 +56,9 @@ every change below was built test-first against a documented friction point.
   from your request or current claim, and refresh-safe; users with an
   entry see their status instead of a duplicate form; failed posts show
   their error at the top of the page.
-- Leaving a ride explains the ride request posted on your behalf (and
-  the confirm dialog warns first).
 - Seats labels follow the selected role; the header shows your name;
-  departure times on a different day include the date.
+  departure times on a different day include the date; typography uses
+  a four-step type scale.
 
 ## [0.1.0] - 2026-08-04
 
