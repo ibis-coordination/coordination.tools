@@ -52,6 +52,7 @@ p { margin: 0 0 12px; }
 .field input, .field textarea { background: #fff; border: 1px solid #999; border-radius: 3px; color: var(--text); padding: 9px 10px; width: 100%; }
 .field input:focus, .field textarea:focus { border-color: #333; outline: 2px solid #ccc; }
 .form-submit { display: flex; align-items: center; gap: 16px; }
+.form-hint { color: var(--muted); font-size: 14px; margin: -6px 0 16px; }
 .error-box { background: #fff1f1; border: 1px solid #b44; margin-bottom: 18px; padding: 10px; }
 .flash { padding-top: 20px; }
 .flash .notice, .flash .error-box { margin-bottom: 0; }

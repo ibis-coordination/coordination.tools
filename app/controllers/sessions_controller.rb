@@ -24,9 +24,20 @@ class SessionsController < ApplicationController
     end
 
     @user = User.new(name: session_params[:name], email: email)
+
+    # Email-first: a new email gets asked for a name as a second step rather
+    # than failing validation on a field that was never shown.
+    if session_params[:name].blank?
+      @user.validate
+      @ask_name = @user.errors[:email].none?
+      render :new, status: :unprocessable_entity
+      return
+    end
+
     if @user.save
       start_session_for @user, notice: "Signed in as #{@user.email}."
     else
+      @ask_name = @user.errors[:email].none?
       render :new, status: :unprocessable_entity
     end
   end

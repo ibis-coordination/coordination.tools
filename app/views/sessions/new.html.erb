@@ -1,11 +1,21 @@
 <% content_for :title, "Sign in — coordination.tools" %>
 <section class="page-shell form-page narrow">
-  <h1>Sign in</h1>
-  <p>Enter your name and email — no password needed. Depending on the email, you'll either be signed in right away or emailed a sign-in link.</p>
+  <h1>Sign in or sign up</h1>
+  <% if @ask_name %>
+    <p>Looks like <strong><%= @user.email %></strong> is new here. What name should we show next to your posts?</p>
+  <% else %>
+    <p>Enter your email — no password needed. We'll sign you in or email you a sign-in link.</p>
+  <% end %>
   <%= form_with model: @user, url: session_path, class: "paper-form" do |form| %>
-    <% if @user.errors.any? %><div class="error-box"><%= @user.errors.full_messages.to_sentence %></div><% end %>
-    <div class="field"><%= form.label :name %><%= form.text_field :name, required: true, autofocus: true %></div>
-    <div class="field"><%= form.label :email %><%= form.email_field :email, required: true %></div>
-    <%= form.submit "Continue", class: "button button-primary" %>
+    <% if @ask_name %>
+      <%= form.hidden_field :email %>
+      <div class="field"><%= form.label :name %><%= form.text_field :name, required: true, autofocus: true %></div>
+      <p class="form-hint">Your name and email will be visible to people in the carpools you join, so they can coordinate with you.</p>
+      <%= form.submit "Continue", class: "button button-primary" %>
+    <% else %>
+      <% if @user.errors[:email].any? %><div class="error-box"><%= @user.errors.full_messages_for(:email).to_sentence %></div><% end %>
+      <div class="field"><%= form.label :email %><%= form.email_field :email, required: true, autofocus: true %></div>
+      <%= form.submit "Continue", class: "button button-primary" %>
+    <% end %>
   <% end %>
 </section>
