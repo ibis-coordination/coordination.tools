@@ -10,8 +10,8 @@ class FormRequirednessTest < ActionDispatch::IntegrationTest
     get new_carpool_path
 
     assert_select "label", text: "Trip name *"
-    assert_select "label", text: "Destination *"
-    assert_select "label", text: "Event start time *"
+    assert_select "label", text: "Destination address (optional)"
+    assert_select "label", text: "Event start time (optional)"
     assert_select "label", text: "Return trip starts around (optional)"
     assert_select "label", text: "Notes (optional)"
     assert_select "label", text: "Your name *"
@@ -23,7 +23,7 @@ class FormRequirednessTest < ActionDispatch::IntegrationTest
     sign_in_as(@organizer)
     get carpool_path(@carpool)
 
-    assert_select "#join-outbound label", text: "Starting location *"
+    assert_select "#join-outbound label", text: "Starting location (optional)"
     assert_select "#join-outbound label", text: "Departure time (optional)"
     assert_select "#join-outbound label", text: "Seats you can offer *"
     assert_select "#join-outbound label", text: "Notes (optional)"
@@ -36,7 +36,7 @@ class FormRequirednessTest < ActionDispatch::IntegrationTest
     sign_in_as(rider)
     get carpool_path(@carpool)
 
-    assert_select ".claim-form label", text: "Pickup location *"
+    assert_select ".claim-form label", text: "Pickup location (optional)"
     assert_select ".claim-form label", text: "Number of seats *"
   end
 

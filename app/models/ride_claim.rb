@@ -7,7 +7,7 @@ class RideClaim < ApplicationRecord
 
   before_validation :set_direction_from_ride
 
-  validates :pickup_location, :direction, presence: true
+  validates :direction, presence: true
   validates :direction, inclusion: { in: %w[outbound return] }
   validates :seats, numericality: { only_integer: true, in: 1..12 }
   validates :user_id, uniqueness: { scope: %i[carpool_id direction], message: "already claimed a ride for this direction" }

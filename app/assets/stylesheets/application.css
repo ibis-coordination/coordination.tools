@@ -33,6 +33,8 @@ p { margin: 0 0 12px; }
 .tool-card p { color: var(--muted); margin: 0; }
 .tool-card + .tool-card { margin-top: 16px; }
 .live-hint { color: var(--muted); font-size: 13px; margin: 16px 0 0; }
+.more-details { margin: 4px 0 16px; }
+.more-details summary { color: var(--link); cursor: pointer; font-size: 14px; margin-bottom: 12px; text-decoration: underline; }
 .claim-details { margin-top: 10px; }
 .claim-details summary { color: var(--link); cursor: pointer; text-decoration: underline; }
 .claim-details .claim-form { border: 1px solid var(--border); margin-top: 10px; padding: 12px; }

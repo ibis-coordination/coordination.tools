@@ -47,10 +47,10 @@ class BoardUxTest < ActionDispatch::IntegrationTest
 
   test "a failed ride post shows the error at the top of the page" do
     sign_in_as(@driver)
-    post carpool_rides_path(@carpool), params: { ride: { role: "driver", direction: "outbound", origin: "", seats: 3 } }
+    post carpool_rides_path(@carpool), params: { ride: { role: "driver", direction: "outbound", origin: "Mission", seats: 0 } }
 
     assert_response :unprocessable_entity
-    assert_select ".flash .error-box", text: /Origin/
+    assert_select ".flash .error-box", text: /Seats/
   end
 
   test "claim forms are rendered inline without a reload" do
@@ -86,7 +86,7 @@ class BoardUxTest < ActionDispatch::IntegrationTest
   test "a failed claim reopens the form with the error visible" do
     ride = @carpool.rides.create!(user: @driver, role: "driver", origin: "Mission", seats: 3)
     sign_in_as(@rider)
-    post carpool_ride_ride_claims_path(@carpool, ride), params: { ride_claim: { pickup_location: "", seats: 1 } }
+    post carpool_ride_ride_claims_path(@carpool, ride), params: { ride_claim: { pickup_location: "Castro", seats: 0 } }
 
     assert_response :unprocessable_entity
     assert_select ".flash .error-box"

@@ -1,10 +1,13 @@
 <%= form_with model: [carpool, ride, ride_claim], namespace: "ride_#{ride.id}", class: "claim-form" do |form| %>
   <% if ride_claim.errors.any? %><div class="error-box"><%= ride_claim.errors.full_messages.to_sentence %></div><% end %>
   <p class="form-hint">* required</p>
-  <div class="field">
-    <%= form.label :pickup_location, ride.direction == "return" ? "Drop-off location *" : "Pickup location *" %>
-    <%= form.text_field :pickup_location, required: true %>
-  </div>
   <div class="field"><%= form.label :seats, "Number of seats *" %><%= form.number_field :seats, min: 1, max: ride.available_seats, required: true %></div>
+  <details class="more-details" <%= "open" if ride_claim.pickup_location.present? || ride_claim.errors.any? %>>
+    <summary>Add more details</summary>
+    <div class="field">
+      <%= form.label :pickup_location, ride.direction == "return" ? "Drop-off location (optional)" : "Pickup location (optional)" %>
+      <%= form.text_field :pickup_location %>
+    </div>
+  </details>
   <%= form.submit switching ? "Switch rides" : "Claim seats", class: "button button-primary" %>
 <% end %>

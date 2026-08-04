@@ -4,7 +4,7 @@ class CarpoolsController < ApplicationController
   before_action :require_user, only: %i[edit update destroy]
   before_action :set_owned_carpool, only: %i[edit update destroy]
   def new
-    @carpool = Carpool.new(starts_at: 1.week.from_now.change(min: 0))
+    @carpool = Carpool.new
   end
 
   def create

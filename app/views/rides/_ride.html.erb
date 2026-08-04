@@ -1,7 +1,7 @@
 <article class="ride-card">
   <div class="ride-main">
     <div class="ride-top"><h3><%= ride.user.name %></h3><span><%= ride.driver? ? "#{pluralize(ride.available_seats, "seat")} available" : "needs #{pluralize(ride.seats, "seat")}" %></span></div>
-    <p class="route"><span><%= ride.direction == "return" ? "Destination:" : "Starting location:" %></span> <%= ride.origin %></p>
+    <p class="route"><span><%= ride.direction == "return" ? "Destination:" : "Starting location:" %></span> <%= ride.origin.presence || "not set — ask #{ride.user.name}" %></p>
     <% if ride.departure_time %>
       <% event_date = (ride.direction == "return" ? @carpool.return_starts_at : @carpool.starts_at)&.to_date %>
       <p class="meta">Departure time: <%= ride.departure_time.strftime(ride.departure_time.to_date == event_date ? "%-I:%M %p" : "%b %-d, %-I:%M %p") %></p>
@@ -15,7 +15,7 @@
           <ul>
             <% ride.ride_claims.each do |claim| %>
               <li>
-                <span><%= claim.user.name %> — <%= pluralize(claim.seats, "seat") %> — <%= claim.pickup_location %><% if signed_in? %> — <%= mail_to claim.user.email %><% end %></span>
+                <span><%= claim.user.name %> — <%= pluralize(claim.seats, "seat") %><% if claim.pickup_location.present? %> — <%= claim.pickup_location %><% end %><% if signed_in? %> — <%= mail_to claim.user.email %><% end %></span>
                 <% if current_user == claim.user %>
                   <%= button_to "Leave ride", carpool_ride_ride_claim_path(@carpool, ride, claim), method: :delete, form: { data: { turbo_confirm: "Leave this ride? We'll add a ride request for you so drivers know you still need a seat — you can remove it afterward." } } %>
                 <% end %>

@@ -39,8 +39,8 @@
       <div class="join-copy">
         <h3>You're on the board</h3>
         <p>
-          <%= your_ride.driver? ? "You're offering #{pluralize(your_ride.seats, "seat")}" : "You're requesting #{pluralize(your_ride.seats, "seat")}" %>
-          (<%= your_ride.origin %>).
+          <%= your_ride.driver? ? "You're offering #{pluralize(your_ride.seats, "seat")}" : "You're requesting #{pluralize(your_ride.seats, "seat")}" %><% if your_ride.origin.present? %>
+          (<%= your_ride.origin %>)<% end %>.
         </p>
       </div>
       <%= link_to "Edit your entry", edit_carpool_ride_path(@carpool, your_ride), class: "button button-light" %>

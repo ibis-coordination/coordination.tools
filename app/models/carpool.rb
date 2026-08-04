@@ -4,7 +4,8 @@ class Carpool < ApplicationRecord
   has_many :ride_claims, dependent: :destroy
 
   before_validation :set_public_id, on: :create
-  validates :name, :destination, :starts_at, :public_id, presence: true
+  before_validation :default_name_from_destination
+  validates :name, :public_id, presence: true
   validates :public_id, uniqueness: true
   validate :return_trip_follows_event
 
@@ -14,6 +15,10 @@ class Carpool < ApplicationRecord
 
   def set_public_id
     self.public_id ||= SecureRandom.base58(10)
+  end
+
+  def default_name_from_destination
+    self.name = "Carpool to #{destination}" if name.blank? && destination.present?
   end
 
   def return_trip_follows_event

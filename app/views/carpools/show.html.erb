@@ -11,8 +11,8 @@
       </div>
     </div>
     <div class="trip-facts">
-      <div><small>Destination</small><strong><%= @carpool.destination %></strong></div>
-      <div><small>Event start time</small><strong><%= @carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></strong></div>
+      <% if @carpool.destination.present? %><div><small>Destination</small><strong><%= @carpool.destination %></strong></div><% end %>
+      <div><small>Event start time</small><strong><%= @carpool.starts_at ? @carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") : "TBD" %></strong></div>
       <% if @carpool.return_starts_at.present? %><div><small>Return trip starts around</small><strong><%= @carpool.return_starts_at.strftime("%A, %b %-d at %-I:%M %p") %></strong></div><% end %>
       <% if @carpool.details.present? %><div><small>Notes</small><strong><%= @carpool.details %></strong></div><% end %>
     </div>

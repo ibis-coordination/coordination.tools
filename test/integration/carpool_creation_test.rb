@@ -43,7 +43,7 @@ class CarpoolCreationTest < ActionDispatch::IntegrationTest
 
   test "invalid carpool details re-render with your info intact" do
     assert_no_difference("User.count") do
-      post carpools_path, params: { carpool: VALID_DETAILS.merge(destination: ""), user: { name: "Fresh", email: "fresh@example.com" } }
+      post carpools_path, params: { carpool: VALID_DETAILS.merge(name: "", destination: ""), user: { name: "Fresh", email: "fresh@example.com" } }
     end
 
     assert_response :unprocessable_entity

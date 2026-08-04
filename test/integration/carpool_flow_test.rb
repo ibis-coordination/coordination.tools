@@ -150,7 +150,7 @@ class CarpoolFlowTest < ActionDispatch::IntegrationTest
     get carpool_path(@carpool, role: "driver", direction: "return")
 
     assert_response :success
-    assert_select "label[for='return_ride_origin']", text: "Destination *"
-    assert_select "label[for='outbound_ride_origin']", text: "Starting location *"
+    assert_select "label[for='return_ride_origin']", text: "Destination (optional)"
+    assert_select "label[for='outbound_ride_origin']", text: "Starting location (optional)"
   end
 end

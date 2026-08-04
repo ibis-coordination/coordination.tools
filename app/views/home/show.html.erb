@@ -11,7 +11,7 @@
       <div class="tool-card">
         <div>
           <h3><%= link_to carpool.name, carpool_path(carpool) %></h3>
-          <p><%= carpool.destination %> — <%= carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></p>
+          <p><%= [carpool.destination.presence, carpool.starts_at ? carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") : "Date TBD"].compact.join(" — ") %></p>
         </div>
         <%= link_to "Open", carpool_path(carpool), class: "button button-light" %>
       </div>
@@ -23,7 +23,7 @@
           <div class="tool-card">
             <div>
               <h3><%= link_to carpool.name, carpool_path(carpool) %></h3>
-              <p><%= carpool.destination %> — <%= carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") %></p>
+              <p><%= [carpool.destination.presence, carpool.starts_at ? carpool.starts_at.strftime("%A, %b %-d at %-I:%M %p") : "Date TBD"].compact.join(" — ") %></p>
             </div>
           </div>
         <% end %>

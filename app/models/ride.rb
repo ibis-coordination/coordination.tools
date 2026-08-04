@@ -5,7 +5,7 @@ class Ride < ApplicationRecord
 
   after_commit -> { broadcast_refresh_to carpool }
 
-  validates :origin, :role, :direction, presence: true
+  validates :role, :direction, presence: true
   validates :role, inclusion: { in: %w[driver rider] }
   validates :direction, inclusion: { in: %w[outbound return] }
   validates :seats, numericality: { only_integer: true, in: 1..12 }

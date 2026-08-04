@@ -10,18 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_193447) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_202650) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "carpools", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "destination", null: false
+    t.string "destination"
     t.text "details"
     t.string "name", null: false
     t.string "public_id", null: false
     t.datetime "return_starts_at"
-    t.datetime "starts_at", null: false
+    t.datetime "starts_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["public_id"], name: "index_carpools_on_public_id", unique: true
@@ -32,7 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_193447) do
     t.bigint "carpool_id", null: false
     t.datetime "created_at", null: false
     t.string "direction", default: "outbound", null: false
-    t.string "pickup_location", null: false
+    t.string "pickup_location"
     t.bigint "ride_id", null: false
     t.integer "seats", default: 1, null: false
     t.datetime "updated_at", null: false
@@ -49,7 +49,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_193447) do
     t.datetime "departure_time"
     t.string "direction", default: "outbound", null: false
     t.text "notes"
-    t.string "origin", null: false
+    t.string "origin"
     t.string "role", null: false
     t.integer "seats", default: 1, null: false
     t.datetime "updated_at", null: false
