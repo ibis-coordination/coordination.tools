@@ -5,5 +5,17 @@
   <div class="field wide"><%= form.label :starts_at, "Event start time" %><%= form.datetime_local_field :starts_at, required: true %></div>
   <div class="field wide"><%= form.label :return_starts_at, "Return trip starts around (optional)" %><%= form.datetime_local_field :return_starts_at %></div>
   <div class="field wide"><%= form.label :details, "Notes" %><%= form.text_area :details, rows: 3 %></div>
+  <% unless signed_in? %>
+    <% if @guest_user&.errors&.any? %><div class="error-box"><%= @guest_user.errors.full_messages.to_sentence %></div><% end %>
+    <div class="field wide">
+      <label for="user_name">Your name</label>
+      <%= text_field_tag "user[name]", params.dig(:user, :name), id: "user_name", required: true %>
+    </div>
+    <div class="field wide">
+      <label for="user_email">Your email</label>
+      <%= email_field_tag "user[email]", params.dig(:user, :email), id: "user_email", required: true %>
+    </div>
+    <p class="form-hint">No password needed — if your email already has an account, we'll send you a sign-in link and finish creating the carpool from there. Your name and email are visible to carpool participants.</p>
+  <% end %>
   <div class="form-submit"><%= form.submit "Create carpool", class: "button button-primary" %></div>
 <% end %>

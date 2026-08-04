@@ -13,17 +13,17 @@ class SecurityFlowTest < ActionDispatch::IntegrationTest
     assert_equal "Organizer", @organizer.reload.name
     assert_equal 1, User.count
 
-    get new_carpool_path
+    get edit_account_path
     assert_redirected_to new_session_path # Mallory is not signed in
   end
 
   test "signing in after a bounce still returns to the requested page" do
-    get new_carpool_path
+    get edit_account_path
     assert_redirected_to new_session_path
 
     post session_path, params: { user: { name: "Alex", email: "alex@example.com" } }
 
-    assert_redirected_to new_carpool_path
+    assert_redirected_to edit_account_path
   end
 
   test "participant emails are hidden from signed out visitors" do

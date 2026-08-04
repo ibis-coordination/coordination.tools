@@ -71,8 +71,20 @@ class SessionsController < ApplicationController
 
   def start_session_for(user, notice:)
     return_to = session[:return_to]
+    pending_carpool = session[:pending_carpool]
     reset_session
     session[:user_id] = user.id
+
+    # A guest who filled in the create-carpool form gets their carpool now
+    # that the magic link proved the email is theirs.
+    if pending_carpool
+      carpool = user.carpools.new(pending_carpool)
+      if carpool.save
+        redirect_to carpool_path(carpool), notice: "#{notice} Your carpool is ready to share."
+        return
+      end
+    end
+
     redirect_to return_to || root_path, notice: notice
   end
 

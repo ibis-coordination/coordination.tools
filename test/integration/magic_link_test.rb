@@ -32,7 +32,7 @@ class MagicLinkTest < ActionDispatch::IntegrationTest
     assert_match %r{/session/confirm\?token=}, email.text_part.body.to_s
     assert_match %r{/session/confirm\?token=}, email.html_part.body.to_s
 
-    get new_carpool_path
+    get edit_account_path
     assert_redirected_to new_session_path # still signed out
   end
 
@@ -53,7 +53,7 @@ class MagicLinkTest < ActionDispatch::IntegrationTest
     travel 31.minutes do
       get confirm_session_path(token: token)
       assert_redirected_to new_session_path
-      get new_carpool_path
+      get edit_account_path
       assert_redirected_to new_session_path # still signed out
     end
     assert_nil @user.reload.email_confirmed_at
