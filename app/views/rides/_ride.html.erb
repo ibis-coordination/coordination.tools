@@ -37,6 +37,12 @@
           </details>
         <% end %>
       <% end %>
+    <% elsif signed_in? && current_user != ride.user && (my_drive = @your_rides[ride.direction])&.driver? %>
+      <% if my_drive.available_seats >= ride.seats %>
+        <%= button_to "Pick up #{ride.user.name}", carpool_pickups_path(@carpool), params: { ride_id: ride.id }, class: "button button-primary pickup-button", form: { data: { turbo_confirm: "Add #{ride.user.name} to your ride (#{pluralize(ride.seats, "seat")}, from #{ride.origin})? We'll email them the news." } } %>
+      <% else %>
+        <p class="full-label">Not enough free seats in your ride.</p>
+      <% end %>
     <% end %>
     <% if current_user == ride.user %>
       <% removal_warning = ride.driver? && ride.ride_claims.any? ? "Remove this ride? #{pluralize(ride.ride_claims.size, "passenger")} will be moved to ride requests." : "Remove your entry?" %>

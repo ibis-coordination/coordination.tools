@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resource :account, only: %i[edit update]
   get "carpool", to: "carpools#new", as: :new_carpool
   resources :carpools, path: "carpool", only: %i[create show edit update destroy], param: :public_id do
+    resources :pickups, only: :create
     resources :rides, only: %i[create edit update destroy] do
       resources :ride_claims, only: %i[create destroy], path: "claims"
     end
