@@ -1,4 +1,6 @@
 class RidesController < ApplicationController
+  include CarpoolBoard
+
   before_action :require_user
   before_action :set_carpool
   before_action :set_owned_ride, only: %i[edit update destroy]
@@ -9,6 +11,8 @@ class RidesController < ApplicationController
       redirect_to carpool_path(@carpool), notice: @ride.driver? ? "Ride offered." : "Ride request added."
     else
       load_board
+      @failed_ride = @ride
+      flash.now[:alert] = @ride.errors.full_messages.to_sentence
       render "carpools/show", status: :unprocessable_entity
     end
   end
@@ -53,12 +57,6 @@ class RidesController < ApplicationController
 
   def set_carpool = @carpool = Carpool.find_by!(public_id: params[:carpool_public_id])
   def set_owned_ride = @ride = @carpool.rides.find_by!(id: params[:id], user: current_user)
-
-  def load_board
-    @drivers = @carpool.rides.where(role: "driver").includes(:ride_claims).order(:departure_time, :created_at).group_by(&:direction)
-    @riders = @carpool.rides.where(role: "rider").order(:created_at).group_by(&:direction)
-    @current_claims = @carpool.ride_claims.where(user: current_user).index_by(&:direction)
-  end
 
   def ride_params
     params.require(:ride).permit(:role, :direction, :origin, :departure_time, :seats, :notes)

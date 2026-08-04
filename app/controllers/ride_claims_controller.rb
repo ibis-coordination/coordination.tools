@@ -1,4 +1,6 @@
 class RideClaimsController < ApplicationController
+  include CarpoolBoard
+
   before_action :require_user
   before_action :set_carpool_and_ride
   before_action :reject_drivers, only: :create
@@ -20,7 +22,10 @@ class RideClaimsController < ApplicationController
 
     redirect_to carpool_path(@carpool), notice: "You joined #{@ride.user.name}'s ride."
   rescue ActiveRecord::RecordInvalid
-    redirect_to carpool_path(@carpool, join_ride: @ride.id, anchor: "claim-form"), alert: @ride_claim.errors.full_messages.to_sentence
+    load_board
+    @claim_ride = @ride
+    flash.now[:alert] = @ride_claim.errors.full_messages.to_sentence
+    render "carpools/show", status: :unprocessable_entity
   end
 
   def destroy

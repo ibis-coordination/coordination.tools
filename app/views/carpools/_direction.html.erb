@@ -1,23 +1,60 @@
-<section class="direction-section" id="<%= direction %>">
+<section class="direction-section" id="<%= direction %>" data-controller="join">
   <h2 class="direction-title"><%= label %></h2>
+  <% your_ride = @your_rides[direction] %>
   <div class="board-actions">
-    <%= link_to "I can drive", carpool_path(@carpool, role: "driver", direction: direction, anchor: "join"), class: "button button-primary" %>
-    <%= link_to "I need a ride", carpool_path(@carpool, role: "rider", direction: direction, anchor: "join"), class: "button button-outline" %>
-    <span>Updates appear automatically.</span>
+    <% if !signed_in? %>
+      <%= link_to "I can drive", new_session_path(return_to: carpool_path(@carpool, role: "driver", direction: direction, anchor: "join-#{direction}")), class: "button button-primary" %>
+      <%= link_to "I need a ride", new_session_path(return_to: carpool_path(@carpool, role: "rider", direction: direction, anchor: "join-#{direction}")), class: "button button-outline" %>
+    <% elsif your_ride %>
+      <%= link_to "Edit your entry", edit_carpool_ride_path(@carpool, your_ride), class: "button button-light" %>
+    <% elsif @current_claims[direction].blank? %>
+      <a href="#join-<%= direction %>" class="button button-primary" data-action="join#pick" data-join-role-param="driver">I can drive</a>
+      <a href="#join-<%= direction %>" class="button button-outline" data-action="join#pick" data-join-role-param="rider">I need a ride</a>
+    <% end %>
   </div>
 
   <div class="ride-columns">
     <div class="ride-column">
-      <div class="column-title"><h3>Available rides</h3><b><%= pluralize(drivers.sum(&:available_seats), "seat") %></b></div>
+      <div class="column-title"><h3>Available rides</h3><b><%= pluralize(drivers.sum(&:available_seats), "seat") %> free</b></div>
       <% if drivers.any? %>
         <% drivers.each do |ride| %><%= render "rides/ride", ride: ride, current_claim: @current_claims[direction] %><% end %>
       <% else %><div class="empty-card"><p>No rides are available.</p></div><% end %>
     </div>
     <div class="ride-column">
-      <div class="column-title"><h3>Ride requests</h3><b><%= pluralize(riders.sum(&:seats), "seat") %></b></div>
+      <div class="column-title"><h3>Ride requests</h3><b><%= pluralize(riders.sum(&:seats), "seat") %> needed</b></div>
       <% if riders.any? %>
         <% riders.each do |ride| %><%= render "rides/ride", ride: ride, current_claim: @current_claims[direction] %><% end %>
       <% else %><div class="empty-card"><p>No unassigned ride requests.</p></div><% end %>
     </div>
+  </div>
+
+  <div class="join-panel" id="join-<%= direction %>">
+    <% if !signed_in? %>
+      <div class="join-copy">
+        <h3><%= label %>: offer or request a ride</h3>
+        <p>Sign in with your email to post a ride and see contact details.</p>
+      </div>
+      <%= link_to "Sign in to continue", new_session_path(return_to: carpool_path(@carpool)), class: "button button-primary" %>
+    <% elsif your_ride %>
+      <div class="join-copy">
+        <h3>You're on the board</h3>
+        <p>
+          <%= your_ride.driver? ? "You're offering #{pluralize(your_ride.seats, "seat")}" : "You're requesting #{pluralize(your_ride.seats, "seat")}" %>
+          (<%= your_ride.origin %>).
+        </p>
+      </div>
+      <%= link_to "Edit your entry", edit_carpool_ride_path(@carpool, your_ride), class: "button button-light" %>
+    <% elsif (claim = @current_claims[direction]) %>
+      <div class="join-copy">
+        <h3>You have a seat</h3>
+        <p>You claimed <%= pluralize(claim.seats, "seat") %> in <%= claim.ride.user.name %>'s ride. If plans change, leave the ride from its card above.</p>
+      </div>
+    <% else %>
+      <% section_ride = @failed_ride && @failed_ride.direction == direction ? @failed_ride :
+           @carpool.rides.new(direction: direction,
+             role: (params[:role].presence_in(%w[driver rider]) if params[:direction] == direction) || "driver") %>
+      <div class="join-copy"><h3><%= label %>: <%= section_ride.driver? ? "offer a ride" : "request a ride" %></h3><p>You can edit or remove this entry later.</p></div>
+      <%= render "rides/form", carpool: @carpool, ride: section_ride, namespace: direction %>
+    <% end %>
   </div>
 </section>

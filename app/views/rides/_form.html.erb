@@ -1,9 +1,9 @@
-<%= form_with model: [carpool, ride], class: "ride-form" do |form| %>
+<%= form_with model: [carpool, ride], namespace: local_assigns[:namespace], class: "ride-form" do |form| %>
   <%= form.hidden_field :direction %>
   <% if ride.errors.any? %><div class="error-box"><%= ride.errors.full_messages.to_sentence %></div><% end %>
   <div class="role-toggle">
-    <label><%= form.radio_button :role, "driver" %><span>I can drive</span></label>
-    <label><%= form.radio_button :role, "rider" %><span>I need a ride</span></label>
+    <label><%= form.radio_button :role, "driver", data: { join_target: "role" } %><span>I can drive</span></label>
+    <label><%= form.radio_button :role, "rider", data: { join_target: "role" } %><span>I need a ride</span></label>
   </div>
   <div class="form-grid">
     <div class="field">

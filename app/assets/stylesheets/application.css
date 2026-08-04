@@ -32,6 +32,10 @@ p { margin: 0 0 12px; }
 .tool-card { align-items: center; border: 1px solid var(--border); display: flex; justify-content: space-between; gap: 24px; padding: 20px; }
 .tool-card p { color: var(--muted); margin: 0; }
 .tool-card + .tool-card { margin-top: 16px; }
+.live-hint { color: var(--muted); font-size: 13px; margin: 16px 0 0; }
+.claim-details { margin-top: 10px; }
+.claim-details summary { color: var(--link); cursor: pointer; text-decoration: underline; }
+.claim-details .claim-form { border: 1px solid var(--border); margin-top: 10px; padding: 12px; }
 .planned-heading { margin-top: 48px; }
 .tool-card-planned { background: var(--subtle); border-style: dashed; }
 .tool-card-planned h3 { color: var(--muted); }

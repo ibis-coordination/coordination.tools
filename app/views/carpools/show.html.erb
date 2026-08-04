@@ -20,18 +20,13 @@
 </section>
 
 <section class="page-shell board-body">
+  <% if current_user == @carpool.user && @carpool.rides.none? %>
+    <div class="notice">Your carpool is live. Share it with the Copy link button above — anyone with the link can offer or request rides, and updates appear here automatically.</div>
+  <% else %>
+    <p class="live-hint">This page updates automatically as people post and join rides.</p>
+  <% end %>
   <%= render "carpools/direction", direction: "outbound", label: "To the event", drivers: @drivers.fetch("outbound", []), riders: @riders.fetch("outbound", []) %>
   <% if @carpool.return_starts_at.present? %>
     <%= render "carpools/direction", direction: "return", label: "Return trip", drivers: @drivers.fetch("return", []), riders: @riders.fetch("return", []) %>
   <% end %>
-
-  <div class="join-panel" id="join">
-    <% if signed_in? %>
-      <div class="join-copy"><h2><%= @ride.direction == "return" ? "Return trip" : "To the event" %>: <%= @ride.driver? ? "Offer a ride" : "Request a ride" %></h2><p>You can edit or remove this entry later.</p></div>
-      <%= render "rides/form", carpool: @carpool, ride: @ride %>
-    <% else %>
-      <div class="join-copy"><h2>Join this carpool</h2><p>Sign in with your name and email to offer or request a ride and see contact details.</p></div>
-      <%= link_to "Sign in to continue", new_session_path(return_to: carpool_path(@carpool)), class: "button button-primary" %>
-    <% end %>
-  </div>
 </section>
