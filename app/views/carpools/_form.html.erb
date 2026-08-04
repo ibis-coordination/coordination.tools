@@ -4,6 +4,7 @@
   <div class="field wide"><%= form.label :destination %><%= form.text_field :destination, placeholder: "Ocean Beach, San Francisco", required: true %></div>
   <div class="field wide"><%= form.label :starts_at, "Event start time" %><%= form.datetime_local_field :starts_at, required: true %></div>
   <div class="field wide"><%= form.label :return_starts_at, "Return trip starts around (optional)" %><%= form.datetime_local_field :return_starts_at %></div>
+  <p class="form-hint">Times are in the event's local time.</p>
   <div class="field wide"><%= form.label :details, "Notes" %><%= form.text_area :details, rows: 3 %></div>
   <% unless signed_in? %>
     <% if @guest_user&.errors&.any? %><div class="error-box"><%= @guest_user.errors.full_messages.to_sentence %></div><% end %>

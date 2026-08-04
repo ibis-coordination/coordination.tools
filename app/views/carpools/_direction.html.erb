@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="join-panel" id="join-<%= direction %>">
+  <div class="join-panel" id="join-<%= direction %>" data-turbo-permanent>
     <% if !signed_in? %>
       <div class="join-copy">
         <h3><%= label %>: offer or request a ride</h3>

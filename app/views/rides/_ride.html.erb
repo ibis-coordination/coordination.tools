@@ -2,7 +2,10 @@
   <div class="ride-main">
     <div class="ride-top"><h3><%= ride.user.name %></h3><span><%= ride.driver? ? "#{pluralize(ride.available_seats, "seat")} available" : "needs #{pluralize(ride.seats, "seat")}" %></span></div>
     <p class="route"><span><%= ride.direction == "return" ? "Destination:" : "Starting location:" %></span> <%= ride.origin %></p>
-    <% if ride.departure_time %><p class="meta">Departure time: <%= ride.departure_time.strftime("%-I:%M %p") %></p><% end %>
+    <% if ride.departure_time %>
+      <% event_date = (ride.direction == "return" ? @carpool.return_starts_at : @carpool.starts_at)&.to_date %>
+      <p class="meta">Departure time: <%= ride.departure_time.strftime(ride.departure_time.to_date == event_date ? "%-I:%M %p" : "%b %-d, %-I:%M %p") %></p>
+    <% end %>
     <% if ride.notes.present? %><p class="notes"><%= ride.notes %></p><% end %>
     <% if signed_in? %><p class="contact">Contact: <%= mail_to ride.user.email %></p><% end %>
     <% if ride.driver? %>
@@ -31,7 +34,7 @@
           <% claim = failed_claim || ride.ride_claims.new(
                pickup_location: prefill.is_a?(RideClaim) ? prefill.pickup_location : prefill&.origin,
                seats: [ prefill&.seats || 1, ride.available_seats ].min) %>
-          <details class="claim-details" <%= "open" if failed_claim %>>
+          <details class="claim-details" id="claim-details-<%= ride.id %>" data-turbo-permanent <%= "open" if failed_claim %>>
             <summary><%= current_claim ? "Switch to this ride" : "Join this ride" %></summary>
             <%= render "ride_claims/form", carpool: @carpool, ride: ride, ride_claim: claim, switching: current_claim.present? %>
           </details>
