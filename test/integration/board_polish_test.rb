@@ -11,10 +11,10 @@ class BoardPolishTest < ActionDispatch::IntegrationTest
     sign_in_as(@rider)
 
     get carpool_path(@carpool, role: "rider", direction: "outbound")
-    assert_select "#join-outbound label", text: "Seats you need"
+    assert_select "#join-outbound label", text: "Seats you need *"
 
     get carpool_path(@carpool, role: "driver", direction: "outbound")
-    assert_select "#join-outbound label", text: "Seats you can offer"
+    assert_select "#join-outbound label", text: "Seats you can offer *"
   end
 
   test "the seats label carries per-role texts for live swapping" do

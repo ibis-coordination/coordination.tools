@@ -7,7 +7,8 @@
   <% if current_user.email_confirmed? %>
     <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form" do |form| %>
       <% if current_user.errors.any? %><div class="error-box"><%= current_user.errors.full_messages.to_sentence %></div><% end %>
-      <div class="field"><%= form.label :name %><%= form.text_field :name, required: true %></div>
+      <p class="form-hint">* required</p>
+      <div class="field"><%= form.label :name, "Name *" %><%= form.text_field :name, required: true %></div>
       <%= form.submit "Save name", class: "button button-primary" %>
     <% end %>
   <% else %>
@@ -21,7 +22,7 @@
       Your address stays <%= current_user.email %> until you click the link.</p>
   <% end %>
   <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form", namespace: "email_change" do |form| %>
-    <div class="field"><%= form.label :email, "New email address" %><%= form.email_field :email, value: "", required: true, placeholder: "you@example.com" %></div>
+    <div class="field"><%= form.label :email, "New email address *" %><%= form.email_field :email, value: "", required: true, placeholder: "you@example.com" %></div>
     <p class="form-hint">We'll email the new address a confirmation link; nothing changes until you click it.</p>
     <%= form.submit "Change email", class: "button button-primary" %>
   <% end %>
