@@ -20,8 +20,6 @@
 </section>
 
 <section class="page-shell board-body">
-  <% if notice %><div class="notice"><%= notice %></div><% end %>
-  <% if alert %><div class="error-box"><%= alert %></div><% end %>
   <%= render "carpools/direction", direction: "outbound", label: "To the event", drivers: @drivers.fetch("outbound", []), riders: @riders.fetch("outbound", []) %>
   <% if @carpool.return_starts_at.present? %>
     <%= render "carpools/direction", direction: "return", label: "Return trip", drivers: @drivers.fetch("return", []), riders: @riders.fetch("return", []) %>

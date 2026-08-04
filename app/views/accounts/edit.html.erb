@@ -1,8 +1,6 @@
 <% content_for :title, "Your account — coordination.tools" %>
 <section class="page-shell form-page narrow">
   <h1>Your account</h1>
-  <% if notice %><div class="notice"><%= notice %></div><% end %>
-  <% if alert %><div class="error-box"><%= alert %></div><% end %>
   <p>Signed in as <strong><%= current_user.email %></strong><%= current_user.email_confirmed? ? " (confirmed)" : "" %>.</p>
   <% if current_user.email_confirmed? %>
     <%= form_with model: current_user, url: account_path, method: :patch, class: "paper-form" do |form| %>

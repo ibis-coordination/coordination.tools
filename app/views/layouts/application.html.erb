@@ -36,6 +36,12 @@
         <% end %>
       </nav>
     </header>
+    <% if notice || alert %>
+      <div class="flash page-shell">
+        <% if notice %><div class="notice"><%= notice %></div><% end %>
+        <% if alert %><div class="error-box"><%= alert %></div><% end %>
+      </div>
+    <% end %>
     <main><%= yield %></main>
     <footer>coordination.tools</footer>
   </body>

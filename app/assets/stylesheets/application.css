@@ -53,6 +53,8 @@ p { margin: 0 0 12px; }
 .field input:focus, .field textarea:focus { border-color: #333; outline: 2px solid #ccc; }
 .form-submit { display: flex; align-items: center; gap: 16px; }
 .error-box { background: #fff1f1; border: 1px solid #b44; margin-bottom: 18px; padding: 10px; }
+.flash { padding-top: 20px; }
+.flash .notice, .flash .error-box { margin-bottom: 0; }
 
 .board-hero { border-bottom: 1px solid var(--border); padding: 32px 0; }
 .board-hero .back-link { margin-bottom: 20px; }
