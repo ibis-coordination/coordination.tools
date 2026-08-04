@@ -58,15 +58,18 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "coordination.tools", protocol: "https" }
 
   # Send mail through Resend's SMTP relay. RESEND_API_KEY is provided by
-  # Kamal from .kamal/secrets.
+  # Kamal from .kamal/secrets. Port 2587 is Resend's alternate STARTTLS
+  # port — DigitalOcean blocks outbound 25/465/587 at the network level.
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: "smtp.resend.com",
-    port: 587,
+    port: 2587,
     user_name: "resend",
     password: ENV["RESEND_API_KEY"],
     authentication: :plain,
-    enable_starttls: true
+    enable_starttls: true,
+    open_timeout: 10,
+    read_timeout: 10
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
