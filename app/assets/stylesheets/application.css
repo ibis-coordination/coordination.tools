@@ -31,6 +31,11 @@ p { margin: 0 0 12px; }
 .tool-section { padding: 48px 0 80px; }
 .tool-card { align-items: center; border: 1px solid var(--border); display: flex; justify-content: space-between; gap: 24px; padding: 20px; }
 .tool-card p { color: var(--muted); margin: 0; }
+.tool-card + .tool-card { margin-top: 16px; }
+.planned-heading { margin-top: 48px; }
+.tool-card-planned { background: var(--subtle); border-style: dashed; }
+.tool-card-planned h3 { color: var(--muted); }
+.planned-tag { border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-size: 13px; padding: 4px 10px; white-space: nowrap; }
 
 .button { background: var(--subtle); border: 1px solid #999; border-radius: 4px; color: var(--text); cursor: pointer; display: inline-block; font-weight: 500; padding: 9px 14px; text-decoration: none; }
 .button:hover { background: #eee; }
