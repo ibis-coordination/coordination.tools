@@ -1,0 +1,9 @@
+<% content_for :title, "Start a group decision — coordination.tools" %>
+<section class="page-shell form-page">
+  <%= link_to "Back", root_path, class: "back-link" %>
+  <div class="form-intro">
+    <h1>Create a group decision</h1>
+    <p>Ask a question, gather options, and converge through acceptance voting.</p>
+  </div>
+  <%= render "form", decision: @decision %>
+</section>

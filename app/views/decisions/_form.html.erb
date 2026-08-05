@@ -1,0 +1,17 @@
+<%= form_with model: decision, class: "paper-form" do |form| %>
+  <% if decision.errors.any? %><div class="error-box"><strong>Please check the details:</strong> <%= decision.errors.full_messages.to_sentence %></div><% end %>
+  <p class="form-hint">* required</p>
+  <div class="field wide"><%= form.label :question, "Question *" %><%= form.text_field :question, placeholder: "Where should we hold the retreat?", autofocus: true, required: true %></div>
+  <% unless signed_in? %>
+    <% if @guest_user&.errors&.any? %><div class="error-box"><%= @guest_user.errors.full_messages.to_sentence %></div><% end %>
+    <div class="field wide"><label for="user_name">Your name *</label><%= text_field_tag "user[name]", params.dig(:user, :name), id: "user_name", required: true %></div>
+    <div class="field wide"><label for="user_email">Your email *</label><%= email_field_tag "user[email]", params.dig(:user, :email), id: "user_email", required: true %></div>
+    <p class="form-hint">No password needed. Existing accounts receive a sign-in link before the decision is created.</p>
+  <% end %>
+  <div class="field wide"><%= form.label :description, "Context (optional)" %><%= form.text_area :description, rows: 4, placeholder: "Share constraints or background that will help the group evaluate options." %></div>
+  <div class="field wide"><%= form.label :deadline, "Voting deadline (optional)" %><%= form.datetime_local_field :deadline %></div>
+  <% if decision.persisted? %>
+    <label class="check-field"><%= form.check_box :options_open %> Let participants add options</label>
+  <% end %>
+  <div class="form-submit"><%= form.submit decision.persisted? ? "Save changes" : "Create decision", class: "button button-primary" %></div>
+<% end %>

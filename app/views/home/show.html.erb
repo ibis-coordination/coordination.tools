@@ -32,11 +32,24 @@
   </section>
 <% end %>
 
+<% if signed_in? && @decisions.any? %>
+  <section class="tool-section page-shell" id="your-decisions">
+    <h2>Your decisions</h2>
+    <% @decisions.each do |decision| %>
+      <div class="tool-card"><div><h3><%= link_to decision.question, decision_path(decision) %></h3><p><%= decision.closed? ? "Closed" : "Open" %> · <%= pluralize(decision.voter_count, "voter") %></p></div><%= link_to "Open", decision_path(decision), class: "button button-light" %></div>
+    <% end %>
+  </section>
+<% end %>
+
 <section class="tool-section page-shell" id="tools">
   <h2>Tools</h2>
   <div class="tool-card">
     <div><h3>Carpool organizer</h3><p>List available rides and ride requests.</p></div>
     <%= link_to "Create a carpool", new_carpool_path, class: "button button-primary" %>
+  </div>
+  <div class="tool-card">
+    <div><h3>Group decision maker</h3><p>Gather options and converge through acceptance voting.</p></div>
+    <%= link_to "Create a decision", new_decision_path, class: "button button-primary" %>
   </div>
 
   <h2 class="planned-heading">Planned tools</h2>
@@ -46,10 +59,6 @@
   </div>
   <div class="tool-card tool-card-planned">
     <div><h3>Volunteer board</h3><p>Post tasks and let people sign up for them.</p></div>
-    <span class="planned-tag">Planned</span>
-  </div>
-  <div class="tool-card tool-card-planned">
-    <div><h3>Group decision maker</h3><p>Gather options and converge on a decision together.</p></div>
     <span class="planned-tag">Planned</span>
   </div>
   <div class="tool-card tool-card-planned">

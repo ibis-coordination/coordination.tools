@@ -18,4 +18,10 @@ Rails.application.routes.draw do
       resources :ride_claims, only: %i[create destroy], path: "claims"
     end
   end
+  get "decision", to: "decisions#new", as: :new_decision
+  resources :decisions, path: "decision", only: %i[create show edit update destroy], param: :public_id do
+    member { post :close }
+    resources :decision_options, only: :create, path: "options"
+    resource :decision_vote, only: :create, path: "vote"
+  end
 end

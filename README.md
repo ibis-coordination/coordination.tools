@@ -16,10 +16,10 @@ To choose another port, run `PORT=3200 docker compose up --build` instead.
 ## Tools
 
 * Carpool organizer
+* Group decision maker (acceptance voting)
 
 ## Planned tools (not built yet)
 
 * Schedule availability finder
 * Volunteer board
-* Group decision maker
 * Conditional commitment tracker
