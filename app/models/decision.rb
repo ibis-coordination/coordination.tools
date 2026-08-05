@@ -16,7 +16,7 @@ class Decision < ApplicationRecord
     decision_options.left_joins(:decision_votes)
       .select("decision_options.*, COUNT(CASE WHEN decision_votes.accepted THEN 1 END) AS acceptances, COUNT(CASE WHEN decision_votes.preferred THEN 1 END) AS preferences")
       .group("decision_options.id")
-      .order(Arel.sql("acceptances DESC, preferences DESC, decision_options.created_at ASC"))
+      .order(Arel.sql("acceptances DESC, preferences DESC, RANDOM()"))
   end
 
   private
