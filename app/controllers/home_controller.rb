@@ -9,5 +9,9 @@ class HomeController < ApplicationController
     # (sorted to the end by Postgres's NULLS LAST default).
     @upcoming_carpools = involved.where("starts_at >= ? OR starts_at IS NULL", Time.current).order(:starts_at)
     @past_carpools = involved.where(starts_at: ...Time.current).order(starts_at: :desc)
+    @decisions = Decision.where(user: current_user)
+      .or(Decision.where(id: current_user.decision_options.select(:decision_id)))
+      .or(Decision.where(id: current_user.decision_votes.select(:decision_id)))
+      .distinct.order(created_at: :desc)
   end
 end

@@ -173,9 +173,32 @@ p { margin: 0 0 12px; }
 .role-toggle input:checked + span { background: var(--selected); font-weight: 600; }
 .ride-form > .button { margin-top: 4px; }
 
+.decision-status, .decision-meta { color: var(--muted); font-size: var(--text-sm); margin-bottom: 6px; }
+.decision-description { margin-top: 20px; max-width: 700px; }
+.decision-description p { margin-bottom: 8px; }
+.decision-meta { margin-top: 18px; }
+.decision-section + .decision-section { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 32px; }
+.results-list { list-style-position: inside; margin: 0; padding: 0; }
+.result-row { align-items: center; border: 1px solid var(--border); display: flex; justify-content: space-between; margin-bottom: 10px; padding: 14px 16px; }
+.result-row.winner { background: var(--success-subtle); border-color: var(--success); }
+.result-row small, .vote-row small { color: var(--muted); display: block; font-size: var(--text-sm); }
+.result-counts { display: flex; gap: 16px; white-space: nowrap; }
+.vote-form { border: 1px solid var(--border); margin-top: 16px; padding: 16px; }
+.vote-head, .vote-row { align-items: center; display: grid; gap: 12px; grid-template-columns: 1fr 70px 70px; }
+.vote-head { color: var(--muted); font-size: var(--text-sm); padding: 0 8px 8px; text-align: center; }
+.vote-head span:first-child { text-align: left; }
+.vote-row { border-top: 1px solid var(--border); padding: 12px 8px; }
+.vote-row label { cursor: pointer; text-align: center; }
+.vote-row label input { margin-right: 5px; }
+.vote-form .button { margin-top: 16px; }
+.inline-form { align-items: end; display: grid; gap: 12px; grid-template-columns: 1fr auto; }
+.inline-form .field { margin: 0; }
+.check-field { display: block; margin: 0 0 20px; }
+.close-panel, .final-statement { background: var(--subtle); padding: 24px; }
+
 @media (max-width: 680px) {
   .tool-card, .board-title, .board-actions { align-items: flex-start; flex-direction: column; }
-  .trip-facts, .ride-columns, .join-panel, .form-grid { grid-template-columns: 1fr; }
+  .trip-facts, .ride-columns, .join-panel, .form-grid, .inline-form { grid-template-columns: 1fr; }
   .form-grid .wide { grid-column: auto; }
   .join-panel { gap: 12px; }
 }

@@ -3,6 +3,9 @@ class User < ApplicationRecord
   has_many :rides, dependent: :restrict_with_error
   has_many :ride_claims, dependent: :restrict_with_error
   has_many :seat_offers, dependent: :destroy
+  has_many :decisions, dependent: :restrict_with_error
+  has_many :decision_options, dependent: :restrict_with_error
+  has_many :decision_votes, dependent: :destroy
 
   generates_token_for :magic_link, expires_in: 30.minutes
 

@@ -1,0 +1,10 @@
+<% content_for :title, "Edit #{@decision.question} — coordination.tools" %>
+<section class="page-shell form-page">
+  <%= link_to "Back", decision_path(@decision), class: "back-link" %>
+  <div class="form-intro"><h1>Edit decision</h1></div>
+  <%= render "form", decision: @decision %>
+  <div class="danger-zone">
+    <h2>Delete this decision</h2>
+    <%= button_to "Delete decision", decision_path(@decision), method: :delete, class: "button button-danger", data: { turbo_confirm: "Delete this decision and all its votes?" } %>
+  </div>
+</section>

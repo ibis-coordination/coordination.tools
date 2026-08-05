@@ -1,0 +1,85 @@
+<% content_for :title, "#{@decision.question} — coordination.tools" %>
+<section class="board-hero">
+  <div class="page-shell">
+    <%= link_to "Back", root_path, class: "back-link" %>
+    <div class="board-title">
+      <div><p class="decision-status"><%= @decision.closed? ? "Closed decision" : "Open decision" %></p><h1><%= @decision.question %></h1></div>
+      <div class="board-title-actions">
+        <% if current_user == @decision.user %><%= link_to "Edit", edit_decision_path(@decision), class: "button button-light" %><% end %>
+        <button class="button button-light" data-action="clipboard#copy"><span data-clipboard-target="label">Copy link</span></button>
+      </div>
+    </div>
+    <% if @decision.description.present? %><p class="decision-description"><%= simple_format(@decision.description) %></p><% end %>
+    <p class="decision-meta">Started by <%= @decision.user.name %><% if @decision.deadline %> · Voting closes <%= @decision.deadline.strftime("%A, %b %-d at %-I:%M %p") %><% end %></p>
+  </div>
+</section>
+
+<section class="page-shell board-body decision-body">
+  <% show_results = @decision.closed? || @has_voted %>
+  <% if show_results %>
+    <section class="decision-section">
+      <div class="column-title"><h2>Results</h2><b><%= pluralize(@decision.voter_count, "voter") %></b></div>
+      <% if @decision.results.any? %>
+        <ol class="results-list">
+          <% @decision.results.each_with_index do |option, index| %>
+            <li class="result-row <%= "winner" if @decision.closed? && index.zero? %>">
+              <div><strong><%= option.title %></strong><small>Proposed by <%= option.user.name %></small></div>
+              <div class="result-counts"><span title="Acceptances">✓ <%= option.acceptances %></span><span title="Preferences">★ <%= option.preferences %></span></div>
+            </li>
+          <% end %>
+        </ol>
+      <% else %><div class="empty-card"><p>No options yet.</p></div><% end %>
+    </section>
+  <% end %>
+
+  <% unless @decision.closed? %>
+    <section class="decision-section">
+      <h2><%= @has_voted ? "Update your vote" : "Vote" %></h2>
+      <% if @decision.decision_options.any? %>
+        <% if signed_in? %>
+          <p class="form-hint">Accept every option you can live with, then star the accepted options you prefer.</p>
+          <%= form_with url: decision_decision_vote_path(@decision), class: "vote-form" do %>
+            <div class="vote-head"><span>Option</span><span>Accept</span><span>Prefer</span></div>
+            <% @decision.decision_options.order(:created_at).each do |option| %>
+              <% vote = @my_votes[option.id] %>
+              <div class="vote-row">
+                <span><strong><%= option.title %></strong><small>Proposed by <%= option.user.name %></small></span>
+                <label><%= check_box_tag "accepted_option_ids[]", option.id, vote&.accepted?, aria: { label: "Accept #{option.title}" } %><span>✓</span></label>
+                <label><%= check_box_tag "preferred_option_ids[]", option.id, vote&.preferred?, aria: { label: "Prefer #{option.title}" } %><span>★</span></label>
+              </div>
+            <% end %>
+            <%= submit_tag @has_voted ? "Update vote" : "Submit vote", class: "button button-primary" %>
+          <% end %>
+        <% else %>
+          <div class="notice"><%= link_to "Sign in to vote", new_session_path(return_to: request.fullpath) %>. Results appear after you vote.</div>
+        <% end %>
+      <% else %><div class="empty-card"><p>Add the first option below, then voting can begin.</p></div><% end %>
+    </section>
+  <% end %>
+
+  <% if !@decision.closed? && @decision.options_open? %>
+    <section class="decision-section add-option">
+      <h2>Add an option</h2>
+      <% if signed_in? %>
+        <%= form_with model: [@decision, @option], class: "inline-form" do |form| %>
+          <div class="field"><%= form.label :title, "Proposed answer" %><%= form.text_field :title, required: true, placeholder: "Add an option for the group to consider" %></div>
+          <%= form.submit "Add option", class: "button button-light" %>
+        <% end %>
+      <% else %><p><%= link_to "Sign in to add an option", new_session_path(return_to: request.fullpath) %>.</p><% end %>
+    </section>
+  <% end %>
+
+  <% if @decision.closed? && @decision.final_statement.present? %>
+    <section class="decision-section final-statement"><h2>Final statement</h2><%= simple_format(@decision.final_statement) %></section>
+  <% end %>
+
+  <% if current_user == @decision.user && !@decision.closed? %>
+    <section class="decision-section close-panel">
+      <h2>Close decision</h2><p>Closing ends voting and marks the highest-ranked option as the winner.</p>
+      <%= form_with url: close_decision_path(@decision) do %>
+        <div class="field"><%= label_tag :final_statement, "Final statement (optional)" %><%= text_area_tag :final_statement, nil, rows: 3 %></div>
+        <%= submit_tag "Close decision", class: "button button-primary", data: { turbo_confirm: "Close voting now?" } %>
+      <% end %>
+    </section>
+  <% end %>
+</section>

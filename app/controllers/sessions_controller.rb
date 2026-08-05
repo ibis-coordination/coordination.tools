@@ -72,6 +72,7 @@ class SessionsController < ApplicationController
   def start_session_for(user, notice:)
     return_to = session[:return_to]
     pending_carpool = session[:pending_carpool]
+    pending_decision = session[:pending_decision]
     reset_session
     session[:user_id] = user.id
 
@@ -81,6 +82,14 @@ class SessionsController < ApplicationController
       carpool = user.carpools.new(pending_carpool)
       if carpool.save
         redirect_to carpool_path(carpool), notice: "#{notice} Your carpool is ready to share."
+        return
+      end
+    end
+
+    if pending_decision
+      decision = user.decisions.new(pending_decision)
+      if decision.save
+        redirect_to decision_path(decision), notice: "#{notice} Your decision is ready to share."
         return
       end
     end
