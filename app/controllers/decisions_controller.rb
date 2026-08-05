@@ -35,7 +35,7 @@ class DecisionsController < ApplicationController
   end
 
   def close
-    @decision.update!(closed_at: Time.current, final_statement: params[:final_statement])
+    @decision.close!(final_statement: params[:final_statement])
     redirect_to decision_path(@decision), notice: "The decision is closed."
   end
 

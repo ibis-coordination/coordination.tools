@@ -16,11 +16,21 @@ class DecisionTest < ActiveSupport::TestCase
     assert_equal [@a, @b], @decision.results.to_a
   end
 
-  test "results break equal vote totals randomly" do
-    sql = @decision.results.to_sql
+  test "closed results persist random tiebreakers" do
+    @decision.close!
+    first_order = @decision.results.map(&:id)
 
-    assert_includes sql, "RANDOM()"
-    assert_not_includes sql, "decision_options.created_at ASC"
+    assert @decision.decision_options.where(result_tiebreaker: nil).none?
+    assert_equal first_order, @decision.results.map(&:id)
+  end
+
+  test "deadline-closed results persist random tiebreakers on first read" do
+    @decision.update!(deadline: 1.minute.ago)
+
+    assert @decision.decision_options.where(result_tiebreaker: nil).any?
+    first_order = @decision.results.map(&:id)
+    assert @decision.decision_options.where(result_tiebreaker: nil).none?
+    assert_equal first_order, @decision.results.map(&:id)
   end
 
   test "a preferred option must be accepted" do

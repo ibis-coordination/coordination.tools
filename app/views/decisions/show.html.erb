@@ -17,11 +17,12 @@
 <section class="page-shell board-body decision-body">
   <% show_results = @decision.closed? || @has_voted %>
   <% if show_results %>
+    <% results = @decision.results.to_a %>
     <section class="decision-section">
       <div class="column-title"><h2>Results</h2><b><%= pluralize(@decision.voter_count, "voter") %></b></div>
-      <% if @decision.results.any? %>
+      <% if results.any? %>
         <ol class="results-list">
-          <% @decision.results.each_with_index do |option, index| %>
+          <% results.each_with_index do |option, index| %>
             <li class="result-row <%= "winner" if @decision.closed? && index.zero? %>">
               <div><strong><%= option.title %></strong><small>Proposed by <%= option.user.name %></small></div>
               <div class="result-counts"><span title="Acceptances">✓ <%= option.acceptances %></span><span title="Preferences">★ <%= option.preferences %></span></div>
