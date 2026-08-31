@@ -23,11 +23,11 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache", "~> 1.0"
-gem "solid_queue", "~> 1.6"
+gem "solid_queue", "~> 1.7"
 gem "solid_cable", "~> 4.0"
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", "~> 1.24", require: false
+gem "bootsnap", "~> 1.25", require: false
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", "~> 0.1", require: false
@@ -48,5 +48,5 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara", "~> 3.40"
-  gem "selenium-webdriver", "~> 4.46"
+  gem "selenium-webdriver", "~> 4.48"
 end
